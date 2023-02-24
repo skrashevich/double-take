@@ -9,12 +9,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
       - name: Install node
         run: |
-          apt-get update && apt-get install -y curl bash
-          curl -sL https://deb.nodesource.com/setup_16.x | bash -
-          apt-get install -y nodejs gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg8-dev libgif-dev jq unzip wget
+          sudo apt-get update
+          sudo apt-get install -y curl bash
+          sudo apt-get install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg8-dev libgif-dev jq unzip wget
           cd api
           npm install --production
           cd ../fronend
