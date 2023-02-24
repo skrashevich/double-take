@@ -1,0 +1,25 @@
+name: build test
+
+on:
+  workflow_dispatch:
+  pull_request:
+  
+jobs:
+  test_build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install node
+        run: |
+          apt-get update && apt-get install -y curl bash
+          curl -sL https://deb.nodesource.com/setup_16.x | bash -
+          apt-get install -y nodejs gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg8-dev libgif-dev jq unzip wget
+          cd api
+          npm install --production
+          cd ../fronend
+          npm install
+          npm run build
+          cd ..
+          npm install nodemon -g
+          
