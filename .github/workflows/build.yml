@@ -37,7 +37,7 @@ jobs:
           cd ./api && npm version ${{steps.version.outputs.prop}}-$(echo ${GITHUB_SHA} | cut -c1-7) --no-git-tag-version
           cd ../frontend && npm version ${{steps.version.outputs.prop}}-$(echo ${GITHUB_SHA} | cut -c1-7) --no-git-tag-version
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v1
+        uses: docker/setup-qemu-action@v2
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Cache Docker layers
