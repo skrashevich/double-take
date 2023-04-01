@@ -110,10 +110,8 @@ module.exports.remove = async (name, opts = {}) => {
   }));
 
   if (ids && ids.length) {
-    db.prepare(
-      `DELETE FROM train WHERE name = ? AND detector IN (${database.params(
-        DETECTORS
-      )}) AND fileId IN (${database.params(ids)})`
+    db.query(
+      `DELETE FROM train WHERE name = ?1 AND detector IN (?2) AND fileId IN (?3)`
     ).run(name, DETECTORS, ids);
     const addIds = database.get
       .trained(name)
@@ -124,8 +122,8 @@ module.exports.remove = async (name, opts = {}) => {
     return { success: true };
   }
 
-  db.prepare(
-    `DELETE FROM train WHERE name = ? AND detector IN (${database.params(DETECTORS)})`
+  db.query(
+    `DELETE FROM train WHERE name = ?1 AND detector IN (?2)`
   ).run(name, DETECTORS);
 
   console.log(

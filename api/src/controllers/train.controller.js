@@ -34,11 +34,11 @@ module.exports.get = async (req, res) => {
         .prepare('SELECT COUNT(*) count FROM file WHERE name = ? AND isActive = 1')
         .bind(req.query.name)
         .all()
-    : db.prepare('SELECT COUNT(*) count FROM file WHERE isActive = 1').all();
+    : db.query('SELECT COUNT(*) count FROM file WHERE isActive = 1').all();
 
   files.forEach((file) => {
     file.results = [];
-    const trainings = db.prepare('SELECT * FROM train WHERE fileId = ?').all(file.id);
+    const trainings = db.query('SELECT * FROM train WHERE fileId = ?1').all(file.id);
     trainings.forEach(({ detector, meta, createdAt }) => {
       meta = JSON.parse(meta);
       delete meta.detector;
@@ -113,7 +113,7 @@ module.exports.add = async (req, res) => {
   } else if (ids) {
     ids.forEach((id) => {
       const db = database.connect();
-      const [match] = db.prepare('SELECT filename FROM match WHERE id = ?').bind(id).all();
+      const [match] = db.query('SELECT filename FROM match WHERE id = ?1').all(id);
       filesystem.copy(
         `${STORAGE.MEDIA.PATH}/matches/${match.filename}`,
         `${STORAGE.MEDIA.PATH}/train/${name}/${match.filename}`

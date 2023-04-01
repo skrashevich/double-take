@@ -24,4 +24,4 @@ then
 fi
 #/usr/local/bin/sqlite_web -p 8888 -H 0.0.0.0 -x -r /.storage/database.db &
 node -e 'require("./api/src/constants")()'
-exec /root/.bun/bin/nodemon -e yml,yaml $PATHS -q --exec "bun" api/server.js
+exec nodemon -e yml,yaml $PATHS -q --exec "bun" api/server.js

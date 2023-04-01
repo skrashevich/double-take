@@ -20,8 +20,8 @@ module.exports.folders = {
       await resync.files();
     }
     const db = database.connect();
-    db.prepare('DELETE FROM file WHERE name = ?').run(name);
-    db.prepare('DELETE FROM train WHERE name = ?').run(name);
+    db.query('DELETE FROM file WHERE name = ?1').run(name);
+    db.query('DELETE FROM train WHERE name = ?1').run(name);
     res.send({ success: true });
   },
 };

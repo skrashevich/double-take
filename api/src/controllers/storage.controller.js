@@ -23,7 +23,7 @@ module.exports.matches = async (req, res) => {
 
   if (showBox === 'true') {
     const db = database.connect();
-    const match = db.prepare('SELECT * FROM match WHERE filename = ?').bind(filename).get();
+    const match = db.query('SELECT * FROM match WHERE filename = ?1').get(filename);
 
     if (!match || !tryParseJSON(match.response)) {
       const buffer = fs.readFileSync(source);
@@ -121,10 +121,10 @@ module.exports.delete = async (req, res) => {
   const { files } = req.body;
   if (files && files.length) {
     const db = database.connect();
-    db.prepare(
+    db.query(
       `DELETE FROM file WHERE id IN (${files.map((obj) => `'${obj.id}'`).join(',')})`
     ).run();
-    db.prepare(
+    db.query(
       `DELETE FROM train WHERE fileId IN (${files.map((obj) => `'${obj.id}'`).join(',')})`
     ).run();
     files.forEach((obj) => {
