@@ -33,26 +33,26 @@ COPY /frontend/public ./public
 COPY /frontend/.env.production /frontend/vue.config.js /frontend/vite.config.js /frontend/.eslintrc.js /frontend/index.html ./
 RUN --mount=type=cache,target=/root/.npm npm run build
 
-FROM ubuntu:20.04 as build
+
+FROM node:16 as build
 ARG DEBIAN_FRONTEND=noninteractive
 # Prepare apt for buildkit cache
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
   && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOT
-#!/bin/bash
 apt -y update
-apt install -y curl bash unzip
-curl -sL https://deb.nodesource.com/setup_16.x | bash -
-apt install -y nodejs gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg8-dev libgif-dev jq wget
+apt install -y curl bash jq unzip wget
+ #curl -sL https://deb.nodesource.com/setup_16.x | bash -
+ #apt install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg8-dev libgif-dev
+
 export BUN_INSTALL=/usr/local/
 curl -fsSL https://bun.sh/install | bash
 EOT
 WORKDIR /double-take/api
 COPY /api/package.json .
-COPY --from=better-sqlite3-builder /build/node_modules/better-sqlite3 ./node_modules/better-sqlite3
-RUN bun install --cache-dir=/root/.npm/_buncache --ignore-scripts
-RUN bun install --cache-dir=/root/.npm/_buncache --ignore-scripts --build-from-source canvas 
+
+RUN --mount=type=cache,target=/root/.npm bun install --cache-dir=/root/.npm/_buncache
 
 WORKDIR /double-take/api
 COPY /api/server.js .
@@ -63,15 +63,10 @@ RUN mkdir /.storage
 RUN ln -s /.storage /double-take/.storage
 
 WORKDIR /double-take
-
-COPY --from=frontend-builder /build/dist ./frontend
-
-RUN --mount=type=cache,target=/root/.npm bun install --cache-dir=/root/.npm/_buncache nodemon -g
+COPY --link --from=frontend-builder /build/dist ./frontend
+RUN --mount=type=cache,target=/root/.npm npm install nodemon -g
 COPY /.build/entrypoint.sh .
 
-
-FROM ubuntu:20.04
-COPY --from=build . .
 #COPY --from=sqlite-web /src/dist/sqlite_web /usr/local/bin/sqlite_web
 ENV NODE_ENV=production
 WORKDIR /double-take
