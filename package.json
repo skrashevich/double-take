@@ -3,23 +3,22 @@
   "version": "1.13.1",
   "description": "Unified UI and API for processing and training images for facial recognition",
   "scripts": {
-    "prepare": "husky install",
-    "frontend": "cd ./frontend && npm run serve",
-    "api": "exec nodemon -e yml,js --watch ./.storage/config --watch ./api -q api/server.js || true",
-    "bump": "npm version $VERSION --no-git-tag-version --allow-same-version && cd ./api && npm version $VERSION --no-git-tag-version --allow-same-version && cd ../frontend && npm version $VERSION --no-git-tag-version --allow-same-version",
+    "frontend": "cd ./frontend && bun run serve",
+    "api": "exec nodemon -e yml,js --watch ./.storage/config --watch ./api -q --exec 'bun' api/server.js || true",
+    "bump": "bun version $VERSION --no-git-tag-version --allow-same-version && cd ./api && bun version $VERSION --no-git-tag-version --allow-same-version && cd ../frontend && bun version $VERSION --no-git-tag-version --allow-same-version",
     "lint:eslint": "eslint --fix",
     "lint:prettier": "prettier --write --loglevel warn"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jakowenko/double-take.git"
+    "url": "git+https://github.com/skrashevich/double-take.git"
   },
   "author": "David Jakowenko",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jakowenko/double-take/issues"
+    "url": "https://github.com/skrashevich/double-take/issues"
   },
-  "homepage": "https://github.com/jakowenko/double-take#readme",
+  "homepage": "https://github.com/skrashevich/double-take#readme",
   "devDependencies": {
     "@commitlint/cli": "^17.0.2",
     "@commitlint/config-conventional": "^17.4.4",
@@ -30,10 +29,11 @@
     "eslint-plugin-prettier": "^4.0.0",
     "husky": "^8.0.1",
     "nodemon": "^2.0.16",
-    "prettier": "^2.8.4"
+    "prettier": "^2.8.7"
   },
   "dependencies": {
     "axios": "^1.2.1",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "node-ipc": "^11.1.0"
   }
 }

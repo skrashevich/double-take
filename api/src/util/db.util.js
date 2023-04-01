@@ -1,22 +1,22 @@
-const Database = require('better-sqlite3');
+import { Database } from "bun:sqlite";
 const time = require('./time.util');
 const filesystem = require('./fs.util');
 const { STORAGE } = require('../constants')();
 const DETECTORS = require('../constants/config').detectors();
 
-const database = this;
 let connection = false;
 
-module.exports.connect = () => {
+const connect = () => {
   if (!connection) connection = new Database(`${STORAGE.PATH}/database.db`);
   return connection;
 };
 
-module.exports.init = async () => {
-  try {
-    const db = database.connect();
 
-    database.migrations();
+const init = async () => {
+  try {
+    const db = connect();
+
+    migrations();
 
     db.prepare(
       `CREATE TABLE IF NOT EXISTS file (
@@ -55,16 +55,16 @@ module.exports.init = async () => {
 
     db.prepare(`DELETE FROM train WHERE meta IS NULL`).run();
 
-    await this.resync.files();
+    await resync.files();
   } catch (error) {
     error.message = `db init error: ${error.message}`;
     console.error(error);
   }
 };
 
-module.exports.migrations = () => {
+const migrations = () => {
   try {
-    const db = database.connect();
+    const db = connect();
     if (
       !db
         .prepare('PRAGMA table_info(match)')
@@ -107,18 +107,18 @@ module.exports.migrations = () => {
   }
 };
 
-module.exports.resync = {
-  files: async () => {
-    const db = database.connect();
+const resync = () => {
+  const files = async () => {
+    const db = connect();
     db.prepare(`UPDATE file SET isActive = 0`).run();
     const files = await filesystem.files.train();
     files.forEach((obj) => this.create.file(obj));
-  },
+  };
 };
 
 module.exports.get = {
   untrained: (name) => {
-    const db = database.connect();
+    const db = connect();
     return db
       .prepare(
         `SELECT * FROM file WHERE id NOT IN (SELECT fileId FROM train WHERE meta IS NOT NULL AND detector IN (${database.params(
@@ -128,11 +128,11 @@ module.exports.get = {
       .all(DETECTORS, name);
   },
   trained: (name) => {
-    const db = database.connect();
+    const db = connect();
     return db.prepare(`SELECT * FROM train WHERE name = ?`).all(name);
   },
   filesById: (ids) => {
-    const db = database.connect();
+    const db = connect();
     return db.prepare(`SELECT * FROM file WHERE id IN (${database.params(ids)})`).all(ids);
   },
   fileByFilename(name, filename) {
@@ -203,3 +203,9 @@ module.exports.update = {
 };
 
 module.exports.params = (array) => '?,'.repeat(array.length).slice(0, -1);
+module.exports = {
+  connect,
+  init,
+  migrations,
+  resync,
+};

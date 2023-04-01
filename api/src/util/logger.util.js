@@ -5,16 +5,14 @@ const { LOGS } = require('../constants')();
 const mqtt = require('./mqtt.util');
 const redact = require('./redact-secrets.util');
 
-const combineMessageAndSplat = () => {
-  return {
-    transform: (info /* , opts */) => {
-      info.message = util.format(redact(info.message), ...redact(info[Symbol.for('splat')] || []));
-      return info;
-    },
-  };
-};
+const combineMessageAndSplat = () => ({
+  transform: (info) => {
+    info.message = util.format(redact(info.message), ...redact(info[Symbol.for('splat')] || []));
+    return info;
+  },
+});
 
-module.exports.init = () => {
+const initializeLogger = () => {
   const logFormat = format.combine(combineMessageAndSplat(), format.simple());
 
   const logger = createLogger({
@@ -67,3 +65,5 @@ module.exports.init = () => {
   console.debug = (...args) => logger.debug(...args);
   console.silly = (...args) => logger.silly(...args);
 };
+
+module.exports.init = initializeLogger;

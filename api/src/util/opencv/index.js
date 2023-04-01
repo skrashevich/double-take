@@ -1,16 +1,12 @@
 const { Canvas, Image, ImageData, loadImage } = require('canvas');
-const { JSDOM } = require('jsdom');
 const { OPENCV } = require('../../constants')();
 
 let isLoaded = false;
 
 const installDOM = () => {
-  const dom = new JSDOM();
-  global.document = dom.window.document;
   global.Image = Image;
-  global.HTMLCanvasElement = Canvas;
+  global.Canvas = Canvas;
   global.ImageData = ImageData;
-  global.HTMLImageElement = Image;
 };
 
 /**
@@ -31,24 +27,16 @@ module.exports.load = (rootDir = '/work', localRootDir = process.cwd()) => {
     installDOM();
     global.Module = {
       onRuntimeInitialized() {
-        // We change emscripten current work directory to 'rootDir' so relative paths are resolved
-        // relative to the current local folder, as expected
         global.cv.FS.chdir(rootDir);
         isLoaded = true;
         console.verbose('opencv loaded');
         resolve();
       },
       preRun() {
-        // preRun() is another callback like onRuntimeInitialized() but is called just before the
-        // library code runs. Here we mount a local folder in emscripten filesystem and we want to
-        // do this before the library is executed so the filesystem is accessible from the start
         const { FS } = global.Module;
-        // create rootDir if it doesn't exists
         if (!FS.analyzePath(rootDir).exists) {
           FS.mkdir(rootDir);
         }
-        // FS.mount() is similar to Linux/POSIX mount operation. It basically mounts an external
-        // filesystem with given format, in given current filesystem directory.
         FS.mount(global.Module.FS.filesystems.NODEFS, { root: localRootDir }, rootDir);
       },
     };
