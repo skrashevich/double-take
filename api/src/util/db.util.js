@@ -17,7 +17,7 @@ async function init() {
 
     migrations();
 
-    db.prepare(
+    db.query(
       `CREATE TABLE IF NOT EXISTS file (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name,
@@ -29,7 +29,7 @@ async function init() {
     )`
     ).run();
 
-    db.prepare(
+    db.query(
       `CREATE TABLE IF NOT EXISTS train (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fileId INTEGER,
@@ -42,7 +42,7 @@ async function init() {
     )`
     ).run();
 
-    db.prepare(
+    db.query(
       `CREATE TABLE IF NOT EXISTS match (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         filename,
@@ -52,7 +52,7 @@ async function init() {
     )`
     ).run();
 
-    db.prepare(`DELETE FROM train WHERE meta IS NULL`).run();
+    db.query(`DELETE FROM train WHERE meta IS NULL`).run();
 
     await resync();
   } catch (error) {
@@ -70,12 +70,12 @@ function migrations() {
         .all()
         .filter((obj) => obj.name === 'filename').length
     ) {
-      db.prepare('DROP TABLE IF EXISTS match').run();
+      db.query('DROP TABLE IF EXISTS match').run();
     }
 
     if (
       db
-        .prepare('PRAGMA table_info(file)')
+        .query('PRAGMA table_info(file)')
         .all()
         .filter((obj) => obj.name === 'uuid').length
     ) {
@@ -108,7 +108,7 @@ function migrations() {
 
 async function resync() {
     const db = connect();
-    db.prepare(`UPDATE file SET isActive = 0`).run();
+    db.query(`UPDATE file SET isActive = 0`).run();
     const files = await filesystem.files.train();
     files.forEach((obj) => createFile(obj));
 };
@@ -125,61 +125,61 @@ function getUntrained(name) {
 };
 function getTrained(name) {
     const db = connect();
-    return db.prepare(`SELECT * FROM train WHERE name = ?`).all(name);
+    return db.query(`SELECT * FROM train WHERE name = ?`).all(name);
 };
 function getFilesById(ids) {
     const db = connect();
-    return db.prepare(`SELECT * FROM file WHERE id IN (${params(ids)})`).all(ids);
+    return db.query(`SELECT * FROM file WHERE id IN (?1)`).all(ids);
 };
 function getFileByFilename(name, filename) {
     const db = connect();
     const [file] = db
-      .prepare(`SELECT * FROM file WHERE name = ? AND filename = ?`)
+      .query(`SELECT * FROM file WHERE name = ?1 AND filename = ?2`)
       .all(name, filename);
     return file || false;
 };
 
 function createFile({ name, filename, meta }) {
     const db = connect();
-    db.prepare(
+    db.query(
       `INSERT INTO file
-        VALUES (:id, :name, :filename, :meta, :isActive, :createdAt)
+        VALUES ($id, $name, $filename, $meta, $isActive, $createdAt)
         ON CONFLICT (name, filename) DO UPDATE SET isActive = 1;`
     ).run({
-      id: null,
-      name,
-      filename,
-      meta: meta || null,
-      createdAt: time.utc(),
-      isActive: 1,
+      $id: null,
+      $name: name,
+      $filename: filename,
+      $meta: meta || null,
+      $createdAt: time.utc(),
+      $isActive: 1,
     });
 };
 function createTrain({ id, name, filename, detector, meta }) {
     const db = connect();
-    db.prepare(
+    db.query(
       `INSERT INTO train
-        VALUES (:id, :fileId, :name, :filename, :detector, :meta, :createdAt)
-        ON CONFLICT (fileId, detector) DO UPDATE SET meta = :meta;`
+        VALUES ($id, $fileId, $name, $filename, $detector, $meta, $createdAt)
+        ON CONFLICT (fileId, detector) DO UPDATE SET meta = $meta;`
     ).run({
-      id: null,
-      fileId: id,
-      name,
-      filename,
-      detector,
-      meta: meta || null,
-      createdAt: time.utc(),
+      $id: null,
+      $fileId: id,
+      $name: name,
+      $filename: filename,
+      $detector: detector,
+      $meta: meta || null,
+      $createdAt: time.utc(),
     });
   };
 function createMatch({ filename, event, response }) {
     const db = connect();
-    db.prepare(
-      `INSERT INTO match (id, filename, event, response, createdAt) VALUES (:id, :filename, :event, :response, :createdAt)`
+    db.query(
+      `INSERT INTO match (id, filename, event, response, createdAt) VALUES ($id, $filename, $event, $response, $createdAt)`
     ).run({
-      id: null,
-      filename,
-      event: event ? JSON.stringify(event) : null,
-      response: response ? JSON.stringify(response) : null,
-      createdAt: time.utc(),
+      $id: null,
+      $filename: filename,
+      $event: event ? JSON.stringify(event) : null,
+      $response: response ? JSON.stringify(response) : null,
+      $createdAt: time.utc(),
     });
   };
 
@@ -187,10 +187,10 @@ function createMatch({ filename, event, response }) {
 function updateMatch({ id, event, response }) {
     event.updatedAt = time.utc();
     const db = connect();
-    db.prepare(`UPDATE match SET event = :event, response = :response WHERE id = :id`).run({
-      event: event ? JSON.stringify(event) : null,
-      response: response ? JSON.stringify(response) : null,
-      id,
+    db.query(`UPDATE match SET event = $event, response = $response WHERE id = $id`).run({
+      $event: event ? JSON.stringify(event) : null,
+      $response: response ? JSON.stringify(response) : null,
+      $id: Number(id),
     });
 };
 
@@ -217,9 +217,3 @@ module.exports = {
 }
 
 module.exports.params = (array) => '?,'.repeat(array.length).slice(0, -1);
-module.exports = {
-  connect,
-  init,
-  migrations,
-  resync,
-};
