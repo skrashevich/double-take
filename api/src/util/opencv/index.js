@@ -1,6 +1,6 @@
-const { Canvas, Image, ImageData, loadImage } = require('canvas');
+const { Canvas, Image, ImageData, loadImage } = require('@napi-rs/canvas');
 const { OPENCV } = require('../../constants')();
-
+const logger = require('../logger.util.js').init();
 let isLoaded = false;
 
 const installDOM = () => {
@@ -29,7 +29,7 @@ module.exports.load = (rootDir = '/work', localRootDir = process.cwd()) => {
       onRuntimeInitialized() {
         global.cv.FS.chdir(rootDir);
         isLoaded = true;
-        console.verbose('opencv loaded');
+        logger.verbose('opencv loaded');
         resolve();
       },
       preRun() {
