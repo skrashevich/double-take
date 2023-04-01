@@ -6,13 +6,12 @@ const DETECTORS = require('../constants/config').detectors();
 
 let connection = false;
 
-const connect = () => {
+function connect() {
   if (!connection) connection = new Database(`${STORAGE.PATH}/database.db`);
   return connection;
 };
 
-
-const init = async () => {
+async function init() {
   try {
     const db = connect();
 
@@ -55,14 +54,14 @@ const init = async () => {
 
     db.prepare(`DELETE FROM train WHERE meta IS NULL`).run();
 
-    await resync.files();
+    await resync();
   } catch (error) {
     error.message = `db init error: ${error.message}`;
     console.error(error);
   }
 };
 
-const migrations = () => {
+function migrations() {
   try {
     const db = connect();
     if (
@@ -107,17 +106,14 @@ const migrations = () => {
   }
 };
 
-const resync = () => {
-  const files = async () => {
+async function resync() {
     const db = connect();
     db.prepare(`UPDATE file SET isActive = 0`).run();
     const files = await filesystem.files.train();
-    files.forEach((obj) => this.create.file(obj));
-  };
+    files.forEach((obj) => createFile(obj));
 };
 
-module.exports.get = {
-  untrained: (name) => {
+function getUntrained(name) {
     const db = connect();
     return db
       .prepare(
@@ -126,27 +122,25 @@ module.exports.get = {
         )})) AND name = ? AND isActive = 1`
       )
       .all(DETECTORS, name);
-  },
-  trained: (name) => {
+};
+function getTrained(name) {
     const db = connect();
     return db.prepare(`SELECT * FROM train WHERE name = ?`).all(name);
-  },
-  filesById: (ids) => {
+};
+function getFilesById(ids) {
     const db = connect();
-    return db.prepare(`SELECT * FROM file WHERE id IN (${database.params(ids)})`).all(ids);
-  },
-  fileByFilename(name, filename) {
-    const db = database.connect();
+    return db.prepare(`SELECT * FROM file WHERE id IN (${params(ids)})`).all(ids);
+};
+function getFileByFilename(name, filename) {
+    const db = connect();
     const [file] = db
       .prepare(`SELECT * FROM file WHERE name = ? AND filename = ?`)
       .all(name, filename);
     return file || false;
-  },
 };
 
-module.exports.create = {
-  file: ({ name, filename, meta }) => {
-    const db = database.connect();
+function createFile({ name, filename, meta }) {
+    const db = connect();
     db.prepare(
       `INSERT INTO file
         VALUES (:id, :name, :filename, :meta, :isActive, :createdAt)
@@ -159,9 +153,9 @@ module.exports.create = {
       createdAt: time.utc(),
       isActive: 1,
     });
-  },
-  train: ({ id, name, filename, detector, meta }) => {
-    const db = database.connect();
+};
+function createTrain({ id, name, filename, detector, meta }) {
+    const db = connect();
     db.prepare(
       `INSERT INTO train
         VALUES (:id, :fileId, :name, :filename, :detector, :meta, :createdAt)
@@ -175,9 +169,9 @@ module.exports.create = {
       meta: meta || null,
       createdAt: time.utc(),
     });
-  },
-  match: ({ filename, event, response }) => {
-    const db = database.connect();
+  };
+function createMatch({ filename, event, response }) {
+    const db = connect();
     db.prepare(
       `INSERT INTO match (id, filename, event, response, createdAt) VALUES (:id, :filename, :event, :response, :createdAt)`
     ).run({
@@ -187,20 +181,40 @@ module.exports.create = {
       response: response ? JSON.stringify(response) : null,
       createdAt: time.utc(),
     });
-  },
-};
+  };
 
-module.exports.update = {
-  match: ({ id, event, response }) => {
+
+function updateMatch({ id, event, response }) {
     event.updatedAt = time.utc();
-    const db = database.connect();
+    const db = connect();
     db.prepare(`UPDATE match SET event = :event, response = :response WHERE id = :id`).run({
       event: event ? JSON.stringify(event) : null,
       response: response ? JSON.stringify(response) : null,
       id,
     });
-  },
 };
+
+module.exports = {
+  init,
+  connect,
+  get: {
+    untrained: getUntrained,
+    trained: getTrained,
+    filesById: getFilesById,
+    fileByFilename: getFileByFilename,
+  },
+  create: {
+    file: createFile,
+    match: createMatch,
+    train: createTrain,
+  },
+  update: {
+    match: updateMatch,
+  },
+  resync: {
+    files: resync,
+  },
+}
 
 module.exports.params = (array) => '?,'.repeat(array.length).slice(0, -1);
 module.exports = {
