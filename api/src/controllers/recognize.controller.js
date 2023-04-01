@@ -16,6 +16,7 @@ const config = require('../constants/config');
 const schedule = require('../util/schedule.util');
 const { AUTH, TOKEN, SERVER, STORAGE, UI } = require('../constants')();
 const fs = require('../util/fs.util');
+const logger = require('../util/logger.util').init();
 
 const { IDS, MATCH_IDS } = {
   IDS: [],
@@ -73,8 +74,8 @@ module.exports.start = async (req, res) => {
 
     const scheduleCheck = schedule.checks(camera);
     if (scheduleCheck.length) {
-      console.verbose('recognition disabled due to schedule');
-      console.verbose(scheduleCheck);
+      logger.verbose('recognition disabled due to schedule');
+      logger.verbose(scheduleCheck);
       return res
         .status(BAD_REQUEST)
         .send({ error: 'recognition disabled due to schedule', checks: scheduleCheck });
@@ -88,7 +89,7 @@ module.exports.start = async (req, res) => {
         IDS,
       });
       if (check !== true) {
-        console.verbose(check);
+        logger.verbose(check);
         return res.status(BAD_REQUEST).error(check);
       }
     }

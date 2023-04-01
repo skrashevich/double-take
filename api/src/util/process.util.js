@@ -12,6 +12,7 @@ const { recognize, normalize } = require('./detectors/actions');
 const { SERVER, STORAGE, UI } = require('../constants')();
 const DETECTORS = require('../constants/config').detectors();
 const config = require('../constants/config');
+const logger = require('./logger.util').init();
 
 module.exports.polling = async (
   event,
@@ -136,8 +137,8 @@ module.exports.start = async ({ camera, filename, tmp, attempts = 1, errors = {}
       if ((faceCountRequired && faceCount > 0) || !faceCountRequired) {
         promises.push(this.process({ camera, detector, tmp, errors }));
         processed.push(detector);
-      } else console.verbose(`processing skipped for ${detector}: no faces found`);
-    } else console.verbose(`processing skipped for ${detector}: ${camera} not allowed`);
+      } else logger.verbose(`processing skipped for ${detector}: no faces found`);
+    } else logger.verbose(`processing skipped for ${detector}: ${camera} not allowed`);
   }
   let results = await Promise.all(promises);
 
