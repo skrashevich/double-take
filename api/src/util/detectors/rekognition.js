@@ -1,18 +1,12 @@
 const fs = require('fs');
 const sizeOf = require('probe-image-size');
-const {
-  RekognitionClient,
-  IndexFacesCommand,
-  SearchFacesByImageCommand,
-  DeleteFacesCommand,
-  CreateCollectionCommand,
-  DescribeCollectionCommand,
-} = require('@aws-sdk/client-rekognition');
+const https = require('https');
+const aws4 = require('aws4');
 const actions = require('./actions');
 const database = require('../db.util');
 const { DETECTORS } = require('../../constants')();
 const config = require('../../constants/config');
-
+const logger = require('../logger.util').init();
 const { REKOGNITION } = DETECTORS || {};
 let awsRequests = 0;
 
@@ -23,44 +17,59 @@ const CONFIGURED =
     REKOGNITION?.COLLECTION_ID) ||
   false;
 
-const client = CONFIGURED
-  ? new RekognitionClient({
+  const awsRequest = async (operation, payload) => {
+    if (!CONFIGURED) throw new Error('rekognition not configured');
+  
+    const body = JSON.stringify({ ...payload, CollectionId: REKOGNITION.COLLECTION_ID });
+    const options = {
+      service: 'rekognition',
       region: REKOGNITION.AWS_REGION,
-      credentials: {
-        accessKeyId: REKOGNITION.AWS_ACCESS_KEY_ID,
-        secretAccessKey: REKOGNITION.AWS_SECRET_ACCESS_KEY,
+      method: 'POST',
+      path: '/',
+      headers: {
+        'Content-Type': 'application/x-amz-json-1.1',
+        'X-Amz-Target': `RekognitionService.${operation}`,
       },
-    })
-  : {
-      send: () => {
-        throw new Error('rekognition not configured');
-      },
+      body,
     };
+  
+    aws4.sign(options, {
+      accessKeyId: REKOGNITION.AWS_ACCESS_KEY_ID,
+      secretAccessKey: REKOGNITION.AWS_SECRET_ACCESS_KEY,
+    });
+  
+    return new Promise((resolve, reject) => {
+      const req = https.request(options, (res) => {
+        let data = '';
+        res.on('data', (chunk) => {
+          data += chunk;
+        });
+        res.on('end', () => {
+          resolve(JSON.parse(data));
+        });
+      });
+  
+      req.on('error', (error) => {
+        reject(error);
+      });
+  
+      req.write(body);
+      req.end();
+    });
+  };
 
-const createCollection = async () =>
-  client.send(new CreateCollectionCommand({ CollectionId: REKOGNITION.COLLECTION_ID }));
-
-const describeCollection = async () =>
-  client.send(new DescribeCollectionCommand({ CollectionId: REKOGNITION.COLLECTION_ID }));
-
+// Rekognition API functions
+const createCollection = async () => awsRequest('CreateCollection', {});
+const describeCollection = async () => awsRequest('DescribeCollection', {});
 const deleteFaces = async ({ faceIds }) =>
-  client.send(
-    new DeleteFacesCommand({ CollectionId: REKOGNITION.COLLECTION_ID, FaceIds: faceIds })
-  );
-
+  awsRequest('DeleteFaces', { FaceIds: faceIds });
 const indexFaces = async ({ bytes }) =>
-  client.send(
-    new IndexFacesCommand({ CollectionId: REKOGNITION.COLLECTION_ID, Image: { Bytes: bytes } })
-  );
-
+  awsRequest('IndexFaces', { Image: { Bytes: bytes.toString('base64') } });
 const searchFacesByImage = async ({ faceMatchThreshold, bytes }) =>
-  client.send(
-    new SearchFacesByImageCommand({
-      CollectionId: REKOGNITION.COLLECTION_ID,
-      FaceMatchThreshold: faceMatchThreshold,
-      Image: { Bytes: bytes },
-    })
-  );
+  awsRequest('SearchFacesByImage', {
+    FaceMatchThreshold: faceMatchThreshold,
+    Image: { Bytes: bytes.toString('base64') },
+  });
 
 module.exports.recognize = async ({ key, test }) => {
   if (test) {
@@ -73,7 +82,7 @@ module.exports.recognize = async ({ key, test }) => {
     height: 0,
   }));
 
-  console.verbose('rekognition: recognize');
+  logger.verbose('rekognition: recognize');
   awsRequests += 1;
   return {
     data: {
@@ -86,7 +95,7 @@ module.exports.recognize = async ({ key, test }) => {
 };
 
 module.exports.train = async ({ key }) => {
-  console.verbose('rekognition: index');
+  logger.verbose('rekognition: index');
   awsRequests += 1;
   return {
     data: { ...(await indexFaces({ bytes: fs.readFileSync(key) })) },
@@ -94,7 +103,7 @@ module.exports.train = async ({ key }) => {
 };
 
 module.exports.remove = ({ ids = [] }) => {
-  console.verbose('rekognition: delete faces');
+  logger.verbose('rekognition: delete faces');
   awsRequests += 1;
   const db = database.connect();
   const faceIds = !ids.length

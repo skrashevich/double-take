@@ -6,7 +6,7 @@
   "scripts": {
     "start": "bun server.js",
     "debug": "nodemon --exec 'bun' server.js",
-    "preinstall": "npm install --build-from-source better-sqlite3@'^8.2.0' --sqlite3=\"/src/sqlite\" && npm install --build-from-source canvas"
+    "preinstall": ""
   },
   "repository": {
     "type": "git",
@@ -29,12 +29,11 @@
     "outputPath": "dist"
   },
   "dependencies": {
-    "@aws-sdk/client-rekognition": "^3.105.0",
     "@mhoc/axios-digest-auth": "^0.8.0",
+    "@napi-rs/canvas": "^0.1.39",
     "archiver": "^5.3.1",
+    "aws4": "^1.12.0",
     "axios": "^0.27.2",
-    "better-sqlite3": "^8.2.0",
-    "canvas": "^2.11.0",
     "cors": "^2.8.5",
     "execution-time": "^1.4.1",
     "express": "^4.18.1",
@@ -43,7 +42,6 @@
     "get-orientation": "^1.1.2",
     "joi": "^17.6.0",
     "js-yaml": "^4.1.0",
-    "jsdom": "^19.0.0",
     "jsonschema": "^1.4.1",
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
@@ -54,10 +52,10 @@
     "probe-image-size": "^7.2.3",
     "read-last-lines": "^1.8.0",
     "romanization": "^0.0.1",
-    "sharp": "^0.30.4",
-    "socket.io": "^4.5.1",
+    "sharp": "^0.32.0",
     "traverse": "^0.6.6",
     "uuid": "^8.3.2",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "ws": "^8.13.0"
   }
 }
