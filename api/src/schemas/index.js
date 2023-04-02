@@ -142,6 +142,15 @@ module.exports.config = {
             cameras: { type: 'array' },
           },
         },
+        azure: {
+          type: 'object',
+          required: ['url'],
+          properties: {
+            url: { type: 'string' },
+            opencv_face_required: { type: 'boolean' },
+            cameras: { type: 'array' },
+          },
+        },
         facebox: {
           type: 'object',
           required: ['url'],

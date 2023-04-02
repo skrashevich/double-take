@@ -60,6 +60,10 @@ module.exports = {
       timeout: 15,
       opencv_face_required: false,
     },
+    azure: {
+      timeout: 15,
+      opencv_face_required: false,
+    },
     facebox: {
       timeout: 15,
       opencv_face_required: false,

@@ -358,6 +358,7 @@ export default {
       if (name === 'compreface') return 'CompreFace';
       if (name === 'deepstack') return 'DeepStack';
       if (name === 'aiserver') return 'AIServer';
+      if (name === 'azure') return 'Azure';
       if (name === 'facebox') return 'Facebox';
       if (name === 'rekognition') return 'Rekognition';
       return name;
