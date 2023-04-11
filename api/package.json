@@ -19,6 +19,8 @@
   "homepage": "https://github.com/skrashevich/double-take#readme",
   "dependencies": {
     "@aws-sdk/client-rekognition": "^3.105.0",
+    "@azure/cognitiveservices-face": "^5.0.0",
+    "@azure/ms-rest-js": "^2.6.6",
     "@mhoc/axios-digest-auth": "^0.8.0",
     "archiver": "^5.3.1",
     "axios": "^0.27.2",

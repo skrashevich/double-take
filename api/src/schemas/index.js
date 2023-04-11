@@ -144,9 +144,11 @@ module.exports.config = {
         },
         azure: {
           type: 'object',
-          required: ['url'],
+          required: ['endpoint', 'key'],
           properties: {
-            url: { type: 'string' },
+            endpoint: { type: 'string' },
+            key: { type: 'string' },
+            person_group_id: { type: 'string' },
             opencv_face_required: { type: 'boolean' },
             cameras: { type: 'array' },
           },
