@@ -1,26 +1,27 @@
 # syntax = docker/dockerfile-upstream:master-labs
-FROM python:3.9 as sqlite-web
-ADD https://github.com/coleifer/sqlite-web.git /src
-WORKDIR /src
-RUN pip3 install pyinstaller flask pygments peewee
-RUN pyinstaller --clean --onefile sqlite_web/sqlite_web.py
 
-FROM node:16 as better-sqlite3-builder
+FROM node:16 as canvas-builder
 ARG DEBIAN_FRONTEND=noninteractive
-ADD https://sqlite.org/2023/sqlite-amalgamation-3410000.zip /tmp/
-WORKDIR /build
-RUN --mount=type=cache,target=/root/.npm <<EOT
-  #!/bin/bash
-  mkdir -p /src
-  cd /src
-  unzip /tmp/sqlite-amalgamation-3410000.zip && rm /tmp/sqlite-amalgamation-3410000.zip
-  mv sqlite* sqlite
-  cd sqlite
-  sed  -i '1i #define SQLITE_MAX_VARIABLE_NUMBER 65532' sqlite3.c
-EOT
-RUN npm install --build-from-source --install-links better-sqlite3@'^8.2.0' --sqlite3="/src/sqlite"
+# Prepare apt for buildkit cache
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
 
-FROM node:16 as frontend-builder
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOT
+apt -y update
+apt install -y build-essential libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev pax-utils curl bash
+ln -s /usr/bin/lddtree /usr/bin/lddtree.sh
+EOT
+ENV BUN_INSTALL /usr/local/
+RUN curl -fsSL https://bun.sh/install | bash
+RUN npm install -g node-gyp
+ADD https://github.com/Automattic/node-canvas.git#v2.11.2 /src
+WORKDIR /src
+RUN bun install --ignore-scripts
+RUN cp ./prebuild/Linux/binding.gyp ./binding.gyp
+RUN node-gyp rebuild -j $(nproc)
+RUN cd build/Release && cp `lddtree -l canvas.node | grep -v 'canvas.node'` /opt/
+
+FROM --platform=$BUILDPLATFORM node:16 AS frontend-builder
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 RUN apt -y update && apt install -y --no-install-recommends curl bash unzip
@@ -44,16 +45,18 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,t
 apt -y update
 apt install -y curl bash jq unzip wget
  #curl -sL https://deb.nodesource.com/setup_16.x | bash -
- #apt install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg8-dev libgif-dev
+apt install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev
 
 export BUN_INSTALL=/usr/local/
 curl -fsSL https://bun.sh/install | bash
+ 
 EOT
 WORKDIR /double-take/api
 COPY /api/package.json .
 
 RUN --mount=type=cache,target=/root/.npm bun install --cache-dir=/root/.npm/_buncache
 RUN cd node_modules/sharp && npm rebuild
+COPY --link --from=canvas-builder /src ./node_modules/canvas
 
 WORKDIR /double-take/api
 COPY /api/server.js .
@@ -65,13 +68,18 @@ RUN mkdir /.storage && ln -s /.storage /double-take/.storage
 WORKDIR /double-take
 COPY --link --from=frontend-builder /build/dist ./frontend
 RUN --mount=type=cache,target=/root/.npm npm install nodemon -g
+RUN mkdir -p /opt/lib
+COPY --link --from=canvas-builder /opt/* /opt/lib/
+RUN cp /lib/*-linux-gnu*/libuuid.so.1.3.0 /opt/lib/libuuid.so.1
+
 #COPY /.build/entrypoint.sh .
 
 #COPY --from=sqlite-web /src/dist/sqlite_web /usr/local/bin/sqlite_web
 
-FROM gcr.io/distroless/nodejs16-debian11
+FROM node:16-slim
 COPY --link --from=build /double-take /double-take
-COPY --from=build /lib/x86_64-linux-gnu/libuuid.so.1.3.0 /lib/x86_64-linux-gnu/libuuid.so.1
+COPY --from=build /opt/lib/* /lib/
+
 ENV NODE_ENV=production
 WORKDIR /double-take
 EXPOSE 3000

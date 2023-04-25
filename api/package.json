@@ -1,6 +1,6 @@
 {
   "name": "double-take-api",
-  "version": "1.13.2",
+  "version": "1.13.4",
   "bin": "server.js",
   "description": "Unified UI and API for processing and training images for facial recognition",
   "scripts": {
@@ -35,7 +35,6 @@
     "aws4": "^1.12.0",
     "axios": "^0.27.2",
     "better-sqlite3": "^8.2.0",
-    "canvas": "^2.11.0",
     "cors": "^2.8.5",
     "execution-time": "^1.4.1",
     "express": "^4.18.1",
