@@ -17,23 +17,20 @@ module.exports.get = async (req, res) => {
   const db = database.connect();
   let files = req.query.name
     ? db
-        .prepare(
+        .query(
           'SELECT id, name, filename, createdAt FROM file WHERE name = ? AND isActive = 1 ORDER BY id DESC LIMIT ?,?'
         )
-        .bind(req.query.name, limit * (page - 1), limit)
-        .all()
+        .all(req.query.name, limit * (page - 1), limit)
     : db
-        .prepare(
+        .query(
           'SELECT id, name, filename, createdAt FROM file WHERE isActive = 1 ORDER BY  id DESC LIMIT ?,?'
         )
-        .bind(limit * (page - 1), limit)
-        .all();
+        .all(limit * (page - 1), limit);
 
   const [total] = req.query.name
     ? db
-        .prepare('SELECT COUNT(*) count FROM file WHERE name = ? AND isActive = 1')
-        .bind(req.query.name)
-        .all()
+        .query('SELECT COUNT(*) count FROM file WHERE name = ? AND isActive = 1')
+        .all(req.query.name)
     : db.query('SELECT COUNT(*) count FROM file WHERE isActive = 1').all();
 
   files.forEach((file) => {

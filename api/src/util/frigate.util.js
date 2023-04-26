@@ -1,4 +1,6 @@
-const axios = require('axios');
+const http = require('http');
+const querystring = require('querystring');
+
 const { FRIGATE, MQTT } = require('../constants')();
 
 const frigate = this;
@@ -9,11 +11,26 @@ module.exports.subLabel = async (topic, id, best) => {
     .map(({ name }) => name)
     .sort()
     .join(', ');
-  await axios({
-    method: 'post',
-    url: `${this.topicURL(topic)}/api/events/${id}/sub_label`,
-    data: { subLabel: names },
-  }).catch((error) => console.error(`sublabel error: ${error.message}`));
+  const postData = querystring.stringify({
+    subLabel: names
+  });
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Content-Length': Buffer.byteLength(postData),
+    },
+    timeout: 5 * 1000,
+  };
+  const url = `${this.topicURL(topic)}/api/events/${id}/sub_label`;
+  const req = http.request(url, options, res => {
+    // Handle response here if needed
+  });
+  req.on('error', error => {
+    console.error(`sublabel error: ${error.message}`);
+  });
+  req.write(postData);
+  req.end();
 };
 
 module.exports.checks = async ({
@@ -81,16 +98,25 @@ module.exports.checks = async ({
 };
 
 module.exports.status = async (topic) => {
-  try {
-    const request = await axios({
-      method: 'get',
-      url: `${this.topicURL(topic)}/api/version`,
-      timeout: 5 * 1000,
+  const url = `${this.topicURL(topic)}/api/version`;
+  return new Promise((resolve, reject) => {
+    const req = http.get(url, { timeout: 5 * 1000 }, res => {
+      let data = '';
+      res.on('data', chunk => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        resolve(JSON.parse(data));
+      });
     });
-    return request.data;
-  } catch (error) {
-    throw new Error(`frigate status error: ${error.message}`);
-  }
+    req.on('error', error => {
+      reject(new Error(`frigate status error: ${error.message}`));
+    });
+    req.on('timeout', () => {
+      req.abort();
+      reject(new Error(`frigate status request timed out after ${timeout}ms`));
+    });
+  });
 };
 
 module.exports.topicURL = (topic) => {
