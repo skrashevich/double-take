@@ -1,3 +1,5 @@
+#!/usr/bin/env bun
+
 // eslint-disable-next-line import/no-import-module-exports
 import * as http from 'node:http';
 
@@ -12,7 +14,7 @@ const config = require('./src/constants/config');
 const shutdown = require('./src/util/shutdown.util');
 const heartbeat = require('./src/util/heartbeat.util');
 const validate = require('./src/schemas/validate');
-const opencv = require('./src/util/opencv');
+//const opencv = require('./src/util/opencv');
 
 async function start() {
   config.setup();
@@ -24,7 +26,7 @@ async function start() {
   console.log(`DB Initialized`);
   const server = new http.Server(require('./src/app')).listen(SERVER.PORT, async () => {
     logger.verbose(`api listening on :${SERVER.PORT}`);
-    if (opencv.shouldLoad()) await opencv.load();
+  //  if (opencv.shouldLoad()) await opencv.load();
   });
   console.log(`HTTP Server Initialized`);
   mqtt.connect();

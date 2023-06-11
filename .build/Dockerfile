@@ -74,7 +74,6 @@ WORKDIR /double-take/api
 COPY /api/package.json .
 ENV PATH /opt/bun/bin:$PATH
 RUN --mount=type=cache,target=/root/.npm bun install --cache-dir=/root/.npm/_buncache
-RUN cd node_modules/sharp && npm rebuild
 
 WORKDIR /double-take/api
 COPY /api/server.js .
