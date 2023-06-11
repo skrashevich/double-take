@@ -95,7 +95,11 @@ COPY --link --from=build /opt/bun /opt/bun
 COPY --link --from=build /double-take /double-take
 COPY --from=build /opt/lib/* /lib/
 
+ENV PATH /opt/bun/bin:/root/.bun/bin:$PATH
+RUN bun install -g nodemon
+
 WORKDIR /double-take
 COPY .build/entrypoint.sh ./
 EXPOSE 3000
+ENV NODE_ENV 'production'
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]

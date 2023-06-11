@@ -1,4 +1,4 @@
-import { Database } from "bun:sqlite";
+import { Database } from 'bun:sqlite';
 const time = require('./time.util');
 const filesystem = require('./fs.util');
 const { STORAGE } = require('../constants')();

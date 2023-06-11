@@ -13,7 +13,7 @@ module.exports.recognize = async ({ key, test }) => {
   formData.append('file', fs.createReadStream(key));
   return axios({
     method: 'post',
-    // timeout: COMPREFACE.TIMEOUT * 1000,
+    timeout: COMPREFACE.TIMEOUT * 1000,
     headers: {
       ...formData.getHeaders(),
       'x-api-key': KEY,
@@ -35,7 +35,7 @@ module.exports.train = ({ name, key }) => {
   formData.append('file', fs.createReadStream(key));
   return axios({
     method: 'post',
-    // timeout: COMPREFACE.TIMEOUT * 1000,
+    timeout: COMPREFACE.TIMEOUT * 1000,
     headers: {
       ...formData.getHeaders(),
       'x-api-key': KEY,
@@ -52,7 +52,7 @@ module.exports.remove = ({ name }) => {
   const { URL, KEY } = COMPREFACE;
   return axios({
     method: 'delete',
-    // timeout: COMPREFACE.TIMEOUT * 1000,
+    timeout: COMPREFACE.TIMEOUT * 1000,
     headers: {
       'x-api-key': KEY,
     },

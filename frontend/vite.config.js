@@ -26,7 +26,8 @@ export default defineConfig(({ command }) => {
             //extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
         },
         build: {
-            outDir: 'dist'
+            outDir: 'dist',
+            target: 'esnext',
         }
     }
 });

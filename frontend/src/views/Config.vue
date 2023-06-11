@@ -98,6 +98,13 @@
             :disabled="loading"
             v-tooltip.left="'Save Config and Restart'"
           />
+          <br />
+          <Button
+            icon="pi pi-copy"
+            class="p-button-sm p-button-secondary p-mr-1"
+            @click="copyYamlConfig"
+            v-tooltip.left="'Copy Config (YAML)'"
+          />
         </div>
       </div>
     </div>
@@ -114,6 +121,7 @@
         :printMargin="false"
         :theme="themes.editor"
         :style="{ height, opacity: !loading ? '100%' : 0 }"
+        :options="{ useWorker: true }"
         @init="editorInit"
       />
     </div>
@@ -123,11 +131,17 @@
 <script>
 import PullToRefresh from 'pulltorefreshjs';
 import copy from 'copy-to-clipboard';
-
 import { VAceEditor } from 'vue3-ace-editor';
-import 'ace-builds/src-noconflict/theme-nord_dark';
-import 'ace-builds/src-noconflict/theme-monokai';
-import 'ace-builds/src-noconflict/mode-yaml';
+
+import ace from 'ace-builds';
+import workerYamlUrl from 'ace-builds/src-noconflict/worker-yaml?url';
+ace.config.setModuleUrl('ace/mode/yaml_worker', workerYamlUrl);
+import modeYamlUrl from 'ace-builds/src-noconflict/mode-yaml?url';
+ace.config.setModuleUrl('ace/mode/yaml', modeYamlUrl);
+import themeMonokaiUrl from 'ace-builds/src-noconflict/theme-monokai?url';
+ace.config.setModuleUrl('ace/theme/monokai', themeMonokaiUrl);
+import themeNordDarkUrl from 'ace-builds/src-noconflict/theme-nord_dark?url';
+ace.config.setModuleUrl('ace/theme/nord_dark', themeNordDarkUrl);
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import { highlight, languages } from 'prismjs/components/prism-core';
