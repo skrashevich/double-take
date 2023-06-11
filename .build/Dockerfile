@@ -64,7 +64,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,t
 apt -y update
 apt install -y curl bash jq unzip wget
  #curl -sL https://deb.nodesource.com/setup_16.x | bash -
-apt install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev
+# apt install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev
 
 export BUN_INSTALL=/opt/bun
 curl -fsSL https://bun.sh/install | bash
