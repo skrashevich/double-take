@@ -1,13 +1,54 @@
 # syntax = docker/dockerfile-upstream:master-labs
+FROM --platform=${BUILDPLATFORM} alpine:latest as recognizer-models
+RUN apk add wget bzip2
+WORKDIR /src/models
+RUN wget https://github.com/davisking/dlib-models/raw/master/shape_predictor_5_face_landmarks.dat.bz2
+RUN wget https://github.com/davisking/dlib-models/raw/master/dlib_face_recognition_resnet_model_v1.dat.bz2
+RUN wget https://github.com/davisking/dlib-models/raw/master/mmod_human_face_detector.dat.bz2
+RUN wget https://github.com/Kagami/go-face-testdata/raw/master/models/shape_predictor_68_face_landmarks.dat
+RUN bunzip2 *.bz2 && rm -rf *.bz2
+
+
+FROM golang:1.20-buster as recognizer-builder
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TARGETARCH
+
+# Cache dependencies
+WORKDIR /src
+COPY ./recognizer/go.mod ./recognizer/go.sum  ./
+COPY ./recognizer/pkg/go-recognizer/go.mod ./pkg/go-recognizer/go.mod 
+COPY ./recognizer/pkg/go-face/go.mod ./pkg/go-face/go.mod 
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/go/pkg/mod go mod download
+
+# Prepare apt for buildkit cache
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked apt update
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked apt install -y libdlib-dev libblas-dev libatlas-base-dev liblapack-dev libjpeg62-turbo-dev wget bzip2 gfortran 
+
+ADD ./recognizer /src
+
+WORKDIR /src
+
+RUN --mount=type=cache,target=/root/.cache/go-build --mount=type=cache,target=/go/pkg/mod/cache/download \
+  --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOT
+if [ "${TARGETARCH}" = "amd64" ]; then
+  apt install -y libquadmath0;
+  export CGO_LDFLAGS="-lcblas -llapack_atlas -lgfortran -lquadmath -lblas -latlas"
+else
+  export CGO_LDFLAGS="-lcblas -llapack_atlas -lgfortran -lblas -latlas"
+fi
+CGO_ENABLED=1 go build -trimpath -ldflags "-s -w -extldflags -static" -o recognizer
+EOT
 
 FROM --platform=$BUILDPLATFORM node:16 AS frontend-builder
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 RUN apt -y update && apt install -y --no-install-recommends curl bash unzip
-ENV BUN_INSTALL /usr/local/
-RUN curl -fsSL https://bun.sh/install | bash
+
 COPY /frontend/package.json .
-RUN --mount=type=cache,target=/root/.npm bun install --cache-dir=/root/.npm/_buncache
+RUN --mount=type=cache,target=/root/.npm npm install
 COPY /frontend/src ./src
 COPY /frontend/public ./public
 COPY /frontend/.env.production /frontend/vue.config.js /frontend/vite.config.js /frontend/.eslintrc.js /frontend/index.html ./
@@ -55,5 +96,6 @@ COPY --link --from=build /double-take /double-take
 COPY --from=build /opt/lib/* /lib/
 
 WORKDIR /double-take
+COPY .build/entrypoint.sh ./
 EXPOSE 3000
-CMD ["/opt/bun/bin/bun", "api/server.js"]
+ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]

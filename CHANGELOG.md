@@ -1,3 +1,23 @@
+## [1.13.9](https://github.com/skrashevich/double-take/compare/v1.13.8...v1.13.9)
+
+Bugfix: Refactor logger.controller.js to check for existence of log files before reading them
+
+## [1.13.8](https://github.com/skrashevich/double-take/compare/v1.13.7...v1.13.8)
+
+Bugfix: load and execute openCV only if necessary
+
+## [1.13.7](https://github.com/skrashevich/double-take/compare/v1.13.6...v1.13.7)
+
+AI.Server: Log "no face found" as info #53 (@marq24)
+
+## [1.13.6](https://github.com/skrashevich/double-take/compare/v1.13.5...v1.13.6)
+
+bugfixes
+
+## [1.13.5](https://github.com/skrashevich/double-take/compare/v1.13.4...v1.13.5)
+
+added device_tracker object to mqtt for each recognized person
+
 ## [1.13.4](https://github.com/skrashevich/double-take/compare/v1.13.3...v1.13.4)
 
 Return support of arm(64) architectures

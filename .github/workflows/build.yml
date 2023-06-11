@@ -41,17 +41,32 @@ jobs:
       run: |
         echo "SHORT_SHA=${GITHUB_SHA::7}" >> $GITHUB_ENV
         if [[ "$GITHUB_REF" == "refs/heads/beta" ]]; then echo TAG=latest; else echo TAG="${GITHUB_REF##*/}"; fi >> $GITHUB_ENV
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        images: |
+          ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}
+          ${{ steps.lowercaseRepo.outputs.lowercase }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=pep440,pattern={{version}}
+          type=pep440,pattern={{major}}.{{minor}}
+          type=pep440,pattern={{major}}
+          type=sha,enable=true,prefix=,suffix=,format=short
+        flavor: |
+          latest=${{ github.ref == 'refs/heads/beta' }}
+          
     - name: Build Docker Image
       uses: docker/build-push-action@v4
       with:
         context: .
         file: .build/Dockerfile
+        
         push: true
-        tags: |
-          ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.SHORT_SHA }}
-          ghcr.io/${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.TAG }}
-          ${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.SHORT_SHA }}
-          ${{ steps.lowercaseRepo.outputs.lowercase }}:${{ env.TAG }}
+        tags: ${{ steps.meta.outputs.tags }}
         platforms: ${{ matrix.platform }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

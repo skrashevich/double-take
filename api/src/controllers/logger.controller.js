@@ -10,8 +10,21 @@ const bytesToSize = (bytes) => {
 };
 
 module.exports.get = async (req, res) => {
-  const { size } = fs.statSync(`${STORAGE.PATH}/messages.log`);
-  const logs = await readLastLines.read(`${STORAGE.PATH}/messages.log`, UI.LOGS.LINES);
+  let size = 0;
+  let logs = '';
+
+  const messageLogPath = `${STORAGE.PATH}/messages.log`;
+  const recognizerLogPath = `${STORAGE.PATH}/recognizer.log`;
+
+  if (fs.existsSync(messageLogPath)) {
+    size += fs.statSync(messageLogPath).size;
+    logs += await readLastLines.read(messageLogPath, UI.LOGS.LINES);
+  }
+
+  if (fs.existsSync(recognizerLogPath)) {
+    size += fs.statSync(recognizerLogPath).size;
+    logs += await readLastLines.read(recognizerLogPath, UI.LOGS.LINES);
+  }
 
   res.send({
     size: bytesToSize(size),
@@ -21,5 +34,6 @@ module.exports.get = async (req, res) => {
 
 module.exports.remove = async (req, res) => {
   fs.writeFileSync(`${STORAGE.PATH}/messages.log`, '');
+  fs.writeFileSync(`${STORAGE.PATH}/recognizer.log`, '');
   res.send();
 };
