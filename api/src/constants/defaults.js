@@ -59,6 +59,16 @@ module.exports = {
       timeout: 15,
       opencv_face_required: false,
     },
+    custom: {
+      timeout: 15,
+      opencv_face_required: false,
+      y_min: 'y_min',
+      x_min: 'x_min',
+      y_max: 'y_max',
+      x_max: 'x_max',
+      userid: 'userid',
+      confidence: 'confidence',
+    },
     facebox: {
       timeout: 15,
       opencv_face_required: false,

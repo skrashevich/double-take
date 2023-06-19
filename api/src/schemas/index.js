@@ -111,6 +111,7 @@ module.exports.config = {
         { required: ['compreface'] },
         { required: ['deepstack'] },
         { required: ['aiserver'] },
+        { required: ['custom'] },
         { required: ['facebox'] },
         { required: ['rekognition'] },
       ],
