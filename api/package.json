@@ -36,7 +36,7 @@
     "jsonwebtoken": "^9.0.0",
     "lodash": "^4.17.21",
     "luxon": "^2.5.2",
-    "mqtt": "^4.3.7",
+    "mqtt": "^5.0.1",
     "multer": "^1.4.5-lts.1",
     "node-schedule": "^2.1.0",
     "probe-image-size": "^7.2.3",
