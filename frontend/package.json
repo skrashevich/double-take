@@ -43,7 +43,7 @@
     "@vitejs/plugin-vue": "^4.2.3",
     "@vue/compiler-sfc": "^3.2.37",
     "@vue/eslint-config-airbnb": "^7.0.0",
-    "@vue/eslint-config-prettier": "^7.0.0",
+    "@vue/eslint-config-prettier": "^8.0.0",
     "eslint": "^8.37.0",
     "eslint-plugin-vue": "^9.10.0",
     "sass": "^1.60.0",
