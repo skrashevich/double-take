@@ -19,11 +19,14 @@ export default defineConfig(({ command }) => ({
     }),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'robots.txt', 'apple-touch-icon.png'],
+      devOptions: {
+        enabled: true
+      },
+      includeAssets: ['favicon.svg', 'favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
         name: 'Double Take',
         short_name: 'DoubleTake',
-        theme_color: '#ffffff',
+        theme_color: '#20262e',
         icons: [
           {
             src: 'src/assets/img/icon.svg',
