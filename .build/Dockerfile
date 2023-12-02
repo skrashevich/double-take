@@ -10,7 +10,7 @@ RUN bun install
 COPY /frontend/src ./src
 COPY /frontend/public ./public
 COPY /frontend/vue.config.js /frontend/vite.config.js /frontend/.eslintrc.js /frontend/index.html /frontend/jsconfig.json ./
-RUN bun run -b build
+RUN bun run build
 
 
 FROM node:18 as build
