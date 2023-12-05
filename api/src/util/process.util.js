@@ -70,7 +70,7 @@ module.exports.polling = async (
             const base64 =
               (foundMatch && MATCH.BASE64 === 'box') || (totalFaces && UNKNOWN.BASE64 === 'box')
                 ? await this.stream(
-                    `http://0.0.0.0:${SERVER.PORT}${UI.PATH}/api/storage/matches/${filename}?box=true`
+                    `http://${SERVER.HOST}:${SERVER.PORT}${UI.PATH}/api/storage/matches/${filename}?box=true`
                   )
                 : stream;
             results.forEach((result) => (result.base64 = base64.toString('base64')));
@@ -131,7 +131,6 @@ module.exports.save = async (event, results, filename, tmp) => {
   } catch (error) {
     error.message = `create match error: ${error.message}`;
     console.error(error);
-    return;
   }
 };
 

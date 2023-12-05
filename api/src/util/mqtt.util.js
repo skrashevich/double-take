@@ -52,10 +52,10 @@ const processMessage = ({ topic, message }) => {
     fs.writer(`${STORAGE.TMP.PATH}/${filename}`, buffer);
     await axios({
       method: 'get',
-      url: `http://0.0.0.0:${SERVER.PORT}${UI.PATH}/api/recognize`,
+      url: `http://${SERVER.HOST}:${SERVER.PORT}${UI.PATH}/api/recognize`,
       headers: AUTH ? { authorization: jwt.sign({ route: 'recognize' }) } : null,
       params: {
-        url: `http://0.0.0.0:${SERVER.PORT}${UI.PATH}/api/${STORAGE.TMP.PATH}/${filename}`,
+        url: `http://${SERVER.HOST}:${SERVER.PORT}${UI.PATH}/api/${STORAGE.TMP.PATH}/${filename}`,
         type: 'mqtt',
         camera,
       },
@@ -73,7 +73,7 @@ const processMessage = ({ topic, message }) => {
 
     await axios({
       method: 'post',
-      url: `http://0.0.0.0:${SERVER.PORT}${UI.PATH}/api/recognize`,
+      url: `http://${SERVER.HOST}:${SERVER.PORT}${UI.PATH}/api/recognize`,
       headers: AUTH ? { authorization: jwt.sign({ route: 'recognize' }) } : null,
       data: {
         ...payload,
@@ -134,9 +134,9 @@ module.exports.subscribe = () => {
 
     const frigateTopics = isArray ? MQTT.TOPICS.FRIGATE : [MQTT.TOPICS.FRIGATE];
     topics.push(...frigateTopics);
-        frigateTopics.forEach((topic) => {
+    frigateTopics.forEach((topic) => {
       const [prefix] = topic.split('/');
-            topics.push(
+      topics.push(
         ...(FRIGATE.CAMERAS.length > 0
           ? FRIGATE.CAMERAS.map((camera) => `${prefix}/${camera}/person/snapshot`)
           : [`${prefix}/+/person/snapshot`])
@@ -270,13 +270,16 @@ module.exports.recognize = (data) => {
           message: 'home',
         });
         clearTimeout(PERSON_RESET_TIMEOUT[topic]);
-        PERSON_RESET_TIMEOUT[topic] = setTimeout(() => {
-          this.publish({
-            topic: `${MQTT.TOPICS.HOMEASSISTANT}/device_tracker/double-take/${topic}/state`,
-            retain: true,
-            message: 'not_home',
-          });
-        }, 1000 * 60 * FRIGATE.DEVICE_TRACKER_TIMEOUT); // 30 min
+        PERSON_RESET_TIMEOUT[topic] = setTimeout(
+          () => {
+            this.publish({
+              topic: `${MQTT.TOPICS.HOMEASSISTANT}/device_tracker/double-take/${topic}/state`,
+              retain: true,
+              message: 'not_home',
+            });
+          },
+          1000 * 60 * FRIGATE.DEVICE_TRACKER_TIMEOUT
+        ); // 30 min
 
         messages.push({
           topic: `${MQTT.TOPICS.HOMEASSISTANT}/sensor/double-take/${topic}/config`,
