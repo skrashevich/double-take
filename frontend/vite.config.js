@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
-import commonjsExternals from 'vite5-plugin-commonjs-externals';
+import commonjsExternals from 'vite-plugin-commonjs-externals';
 // import svgLoader from 'vite-svg-loader'
 import EnvironmentPlugin from 'vite-plugin-environment';
 
