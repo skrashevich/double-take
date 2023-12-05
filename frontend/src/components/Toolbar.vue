@@ -2,23 +2,43 @@
   <div class="tool-bar-wrapper p-pr-3 p-d-flex p-jc-between p-ai-center" ref="toolbar">
     <div><TabMenu :model="navigation" class="navigation" :class="{ show: showNavigation }" /></div>
     <div v-if="updateAvailable" class="version p-ml-auto p-mr-2" v-tooltip.left="`Update Available`">
-      <div class="icon" @click="dockerHub"></div>
+      <div class="icon" @click="dockerHub" />
     </div>
     <div class="double-take-menu-wrapper p-d-flex" @click="toggleMenu">
-      <i class="pi p-mr-1 pi-angle-down p-as-center" style="height: 14px; overflow: hidden"></i>
+      <i class="pi p-mr-1 pi-angle-down p-as-center" style="height: 14px; overflow: hidden" />
       Double Take
-      <Menu
-        v-if="$route.path === '/login'"
-        ref="menu"
-        class="double-take-menu"
-        :model="
-          hasAuth
-            ? [{ items: unauthorizedMenu[0].items.filter((obj) => obj.label.toLowerCase() !== 'logs') }]
-            : unauthorizedMenu
-        "
-        :popup="true"
-      />
-      <Menu v-else ref="menu" class="double-take-menu" :model="menu" :popup="true" />
+      <div v-if="$route.path === '/login'" class="double-take-menu" :class="{ 'p-popup': true }">
+        <ul v-if="hasAuth" class="p-menu-list p-reset">
+          <li
+            v-for="item in unauthorizedMenu[0].items.filter((obj) => obj.label.toLowerCase() !== 'logs')"
+            :key="item.label"
+            class="p-menuitem"
+          >
+            <a :href="item.to" class="p-menuitem-link">
+              <span class="p-menuitem-icon" :class="item.icon" />
+              <span class="p-menuitem-text">{{ item.label }}</span>
+            </a>
+          </li>
+        </ul>
+        <ul v-else class="p-menu-list p-reset">
+          <li v-for="item in unauthorizedMenu[0].items" :key="item.label" class="p-menuitem">
+            <a :href="item.to" class="p-menuitem-link">
+              <span class="p-menuitem-icon" :class="item.icon" />
+              <span class="p-menuitem-text">{{ item.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div v-else class="double-take-menu" :class="{ 'p-popup': true }">
+        <ul class="p-menu-list p-reset">
+          <li v-for="item in menu" :key="item.label" class="p-menuitem">
+            <a :href="item.to" class="p-menuitem-link">
+              <span class="p-menuitem-icon" :class="item.icon" />
+              <span class="p-menuitem-text">{{ item.label }}</span>
+            </a>
+          </li>
+        </ul>
+      </div>
       <Dialog
         position="top"
         :modal="true"
@@ -47,18 +67,16 @@
 </template>
 
 <script>
-import Menu from 'primevue/menu';
 import TabMenu from 'primevue/tabmenu';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ApiService from '@/services/api.service';
+import ApiService from '../services/api.service';
 import { version } from '../../package.json';
 
 export default {
   components: {
     TabMenu,
-    Menu,
     Dialog,
     Button,
     InputText,
