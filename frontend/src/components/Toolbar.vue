@@ -2,13 +2,13 @@
   <div class="tool-bar-wrapper p-pr-3 p-d-flex p-jc-between p-ai-center" ref="toolbar">
     <div><TabMenu :model="navigation" class="navigation" :class="{ show: showNavigation }" /></div>
     <div v-if="updateAvailable" class="version p-ml-auto p-mr-2" v-tooltip.left="`Update Available`">
-      <div class="icon" @click="dockerHub"></div>
+      <div class="icon" @click="dockerHub" />
     </div>
     <div class="double-take-menu-wrapper p-d-flex" @click="toggleMenu">
-      <i class="pi p-mr-1 pi-angle-down p-as-center" style="height: 14px; overflow: hidden"></i>
+      <i class="pi p-mr-1 pi-angle-down p-as-center" style="height: 14px; overflow: hidden" />
       Double Take
       <Menu
-        v-if="$route.path === '/login'"
+        v-if="isLoginPath"
         ref="menu"
         class="double-take-menu"
         :model="
@@ -56,6 +56,20 @@ import ApiService from '@/services/api.service';
 import { version } from '../../package.json';
 
 export default {
+  computed: {
+    isLoginPath() {
+      return this.$route.path === '/login';
+    },
+    isDisabled() {
+      return (
+        !this.password.current ||
+        !this.password.new ||
+        !this.password.verify ||
+        this.password.new !== this.password.verify
+      );
+    },
+  },
+
   components: {
     TabMenu,
     Menu,
@@ -144,16 +158,6 @@ export default {
     } catch (error) {
       this.emitter.emit('error', error);
     }
-  },
-  computed: {
-    isDisabled() {
-      return (
-        !this.password.current ||
-        !this.password.new ||
-        !this.password.verify ||
-        this.password.new !== this.password.verify
-      );
-    },
   },
   methods: {
     getHeight() {
@@ -322,12 +326,12 @@ a.update.visible {
   }
 }
 
-::v-deep(.p-tabmenu) .p-tabmenuitem:not(.p-highlight):not(.p-disabled):hover .p-menuitem-link {
+.p-tabmenu .p-tabmenuitem:not(.p-highlight):not(.p-disabled):hover .p-menuitem-link {
   background: none;
 }
 
-::v-deep(.p-tabmenu) .p-tabmenuitem .p-menuitem-link {
-  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0) !important;
+.p-tabmenu .p-tabmenuitem .p-menuitem-link {
+  box-shadow: none !important;
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 </style>
