@@ -52,7 +52,7 @@ import TabMenu from 'primevue/tabmenu';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
-import ApiService from '@/services/api.service';
+import ApiService from '../services/api.service';
 import { version } from '../../package.json';
 
 export default {
@@ -89,10 +89,10 @@ export default {
       verify: null,
     },
     navigation: [
-      { label: 'Matches', icon: 'pi pi-fw fa fa-portrait', to: '/' },
-      { label: 'Train', icon: 'pi pi-fw fa fa-images', to: '/train' },
-      { label: 'Config', icon: 'pi pi-fw pi-cog', to: '/config' },
-      { label: 'Logs', icon: 'pi pi-fw pi-file', to: '/logs' },
+      { label: 'Matches', command: () => this.navigate('/'), icon: 'pi pi-fw fa fa-portrait', to: '/' },
+      { label: 'Train', command: () => this.navigate('/train'), icon: 'pi pi-fw fa fa-images', to: '/train' },
+      { label: 'Config', command: () => this.navigate('/config'), icon: 'pi pi-fw pi-cog', to: '/config' },
+      { label: 'Logs', command: () => this.navigate('/logs'), icon: 'pi pi-fw pi-file', to: '/logs' },
     ],
     menu: [],
     unauthorizedMenu: [
@@ -105,7 +105,7 @@ export default {
               window.open('https://github.com/sponsors/jakowenko');
             },
           },
-          { label: 'Logs', icon: 'pi pi-fw pi-file', to: '/logs' },
+          { label: 'Logs', command: () => this.navigate('/logs'), icon: 'pi pi-fw pi-file', to: '/logs' },
         ],
       },
     ],
@@ -119,8 +119,8 @@ export default {
               window.open('https://github.com/sponsors/jakowenko');
             },
           },
-          { label: 'Logs', icon: 'pi pi-fw pi-file', to: '/logs' },
-          { label: 'Access Tokens', icon: 'pi pi-fw pi-key', to: '/tokens' },
+          { label: 'Logs', command: () => this.navigate('/logs'), icon: 'pi pi-fw pi-file', to: '/logs' },
+          { label: 'Access Tokens', command: () => this.navigate('/tokens'), icon: 'pi pi-fw pi-key', to: '/tokens' },
           {
             label: 'Change Password',
             icon: 'pi pi-fw pi-lock',
@@ -160,6 +160,9 @@ export default {
     }
   },
   methods: {
+    navigate(path) {
+      this.$router.push(path);
+    },
     getHeight() {
       return this.$refs.toolbar.clientHeight;
     },
