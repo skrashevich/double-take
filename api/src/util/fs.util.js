@@ -171,4 +171,20 @@ module.exports.copyFileSync = (source, destination) => {
     error.message = `copyFileSync file error: ${error.message}`;
     console.error(error);
   }
+  return null;
+};
+
+/**
+ * Gets the last modified date of the file.
+ * @param {string} filePath - The path to the file.
+ * @returns {string} - The last modified date in a readable format.
+ */
+module.exports.getLastModified = (filePath) => {
+  try {
+    const stats = fs.statSync(filePath);
+    return stats.mtime.toUTCString(); // Convert the date to a readable format
+  } catch (error) {
+    console.error('Error getting file stats:', error);
+    return null;
+  }
 };
