@@ -78,9 +78,12 @@ EOT
 COPY --link --from=build /double-take /double-take
 COPY --from=build /opt/lib/* /lib/
 
+RUN mkdir /.storage && ln -s /.storage /double-take/.storage
+
 RUN npm install nodemon -g
 
 WORKDIR /double-take
 COPY .build/entrypoint.sh ./
 EXPOSE 3000
+VOLUME [ "/.storage" ]
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]
