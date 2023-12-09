@@ -14,7 +14,7 @@
         />
       </div>
       <div class="p-mr-2">
-        <Button label="Cancel" class="p-button-text p-button-sm p-ml-2" @click="createFolder.show = false" />
+        <Button label="$t('cancel')" class="p-button-text p-button-sm p-ml-2" @click="createFolder.show = false" />
       </div>
     </div>
     <div v-else class="p-d-flex p-jc-between">
@@ -49,7 +49,7 @@
             <Button
               class="responsive-button p-button-success p-button-sm"
               icon="pi pi-check"
-              label="Train"
+              label="$t('train')"
               :disabled="matches.selected.length === 0 || !folder"
               @click="$parent.train"
             />
@@ -75,7 +75,7 @@
               icon="fa fa-recycle push-top"
               class="responsive-button p-button-success p-button-sm p-ml-1"
               @click="$parent.sync"
-              label="Sync"
+              :label="t('hello')"
               :disabled="!matches.source.filter((obj) => obj.name === folder).length"
             />
             <Button
@@ -286,6 +286,7 @@ import SpeedDial from '@/components/SpeedDial.vue';
 
 import Constants from '@/util/constants.util';
 import ApiService from '@/services/api.service';
+//import { useI18n } from 'vue-i18n';
 
 export default {
   components: {

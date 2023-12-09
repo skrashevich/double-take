@@ -4,10 +4,10 @@ import commonjsExternals from 'vite-plugin-commonjs-externals';
 // import svgLoader from 'vite-svg-loader'
 import EnvironmentPlugin from 'vite-plugin-environment';
 import { webpackStats } from 'rollup-plugin-webpack-stats';
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
+import path from 'path';
 
 // https://vitejs.dev/config/
-
-const path = require('path');
 
 const externals = ['path', /^src(\/.+)?$/];
 
@@ -21,6 +21,10 @@ export default defineConfig(({ command }) => ({
     }),
     // Output webpack-stats.json file
     webpackStats(),
+
+    VueI18nPlugin({
+      include: [path.resolve(__dirname, './locales/**')],
+    }),
   ],
   base: command === 'serve' ? '/' : './',
 

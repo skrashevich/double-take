@@ -1,0 +1,24 @@
+confirmation: Bestätigung
+do-you-want-to-train-description-for-this-trainingfolder: Möchtest du {0} für {1} trainieren?
+doYouWantToRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles: Möchten Sie {0} ungeschulte {1} entfernen?
+doYouWantToSyncAllImagesForThisTrainingfolderThisWillUntrainAndRetrainAllImagesForTheConfiguredDetectors: >-
+  Möchten Sie alle Bilder für {0} synchronisieren? Dadurch werden alle Bilder
+  für die konfigurierten Detektoren enttrainiert und erneut trainiert.
+doYouWantToUntrainAllImagesForThisTrainingfolder: Möchten Sie alle Bilder für {0} enttrainieren?
+access-tokens: Zugriffstoken
+addNew: neu hinzufügen
+andRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles: und entferne {0} untrainierte {1}?
+create: Erstellen
+create-access-tokens-to-allow-other-applications-to-interact-with-your-double-take-api-tokens-should-be-passed-as-a-query-string-parameter-in-the-format-of: >-
+  Erstellen Sie Zugriffstoken, um anderen Anwendungen die Interaktion mit Ihrer
+  Double Take API zu ermöglichen. Tokens sollten als
+  Abfragezeichenfolge-Parameter im Format von übergeben werden.
+deleted: gelöscht
+description-trained-for-this-trainingfolder: '{0} trainierte für {1}'
+do-you-want-to-delete-description: Möchten Sie {0} löschen?
+doYouWantToClearTheLogFile: Möchten Sie die Protokolldatei löschen?
+doYouWantToUntrainTrainedLengthTrainedLength_1FileFilesFromNamesJoinAnd: Möchten Sie {0} {1} von {2} abtrainieren?
+cancel: Stornieren
+currentPassword: Aktuelles Passwort
+file: Datei
+files: Dateien

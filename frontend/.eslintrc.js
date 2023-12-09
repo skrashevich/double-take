@@ -4,9 +4,9 @@ module.exports = {
     sourceType: 'module',
   },
   env: {
-    es2022: true
+    es2022: true,
   },
-  extends: ['plugin:vue/vue3-essential', '@vue/prettier', '@vue/airbnb'],
+  extends: ['plugin:vue/vue3-essential', '@vue/prettier', '@vue/airbnb', 'plugin:@intlify/vue-i18n/recommended'],
   rules: {
     // Only allow debugger in development
     'no-debugger': process.env.PRE_COMMIT ? 'error' : 'warn',
@@ -14,7 +14,7 @@ module.exports = {
     'no-console': process.env.PRE_COMMIT
       ? ['error', { allow: ['warn', 'error'] }]
       : ['warn', { allow: ['warn', 'error'] }],
-    "vue/multi-word-component-names" : "off",
+    'vue/multi-word-component-names': 'off',
     'max-len': 0,
     // Allow object properties to be reassigned.
     'no-param-reassign': ['error', { props: false }],
@@ -65,7 +65,6 @@ module.exports = {
     'vuejs-accessibility/anchor-has-content': 'off',
     'vuejs-accessibility/mouse-events-have-key-events': 'off',
     'vuejs-accessibility/no-static-element-interactions': 'off',
-    'vue/multi-word-component-names': 'off',
     'no-promise-executor-return': 'off',
 
     // No way to override these in Prettier, so change Airbnb rules
@@ -85,12 +84,18 @@ module.exports = {
       },
     ],
     'wrap-iife': 'off',
+    '@intlify/vue-i18n/no-dynamic-keys': 'error',
+    '@intlify/vue-i18n/no-unused-keys': [
+      'error',
+      {
+        extensions: ['.js', '.vue'],
+      },
+    ],
   },
   overrides: [
     {
       files: ['src/**/*', 'tests/unit/**/*', 'tests/e2e/**/*'],
       parserOptions: {
-
         sourceType: 'module',
       },
       env: {
@@ -98,4 +103,9 @@ module.exports = {
       },
     },
   ],
+  settings: {
+    'vue-i18n': {
+      localeDir: './path/to/locales/*.{json,json5,yaml,yml}', // extension is glob formatting!
+    },
+  },
 };

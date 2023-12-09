@@ -23,7 +23,7 @@
         />
       </div>
       <div v-if="logs === ''" class="p-d-flex p-text-center p-jc-center p-ai-center" :style="'height: ' + height">
-        <strong>Log file is empty</strong>
+        <strong>{{ $t('logFileIsEmpty') }}</strong>
       </div>
       <pre v-else-if="height" ref="logs" :style="'height: ' + height">{{ logs }}</pre>
     </div>
@@ -83,8 +83,8 @@ export default {
     async remove() {
       try {
         this.$confirm.require({
-          header: 'Confirmation',
-          message: 'Do you want to clear the log file?',
+          header: this.$t('confirmation'),
+          message: this.$t('doYouWantToClearTheLogFile'),
           acceptClass: 'p-button-danger',
           position: 'top',
           accept: async () => {

@@ -1,5 +1,23 @@
 {
   "eslint.workingDirectories": [
     { "mode": "auto" }
+  ],
+  "i18n-ally.localesPaths": [
+    "frontend/locales"
+  ],
+  "i18n-ally.keystyle": "flat",
+  "i18n-ally.extract.ignored": [
+    "pi pi-fw fa fa-portrait",
+    "pi pi-fw pi-cog",
+    "pi pi-fw pi-file",
+    "pi pi-fw fa fa-images",
+    "pi pi-heart",
+    "pi pi-fw pi-key",
+    "pi pi-fw pi-power-off",
+    "pi pi-fw pi-lock",
+    "pi pi-fw pi-lock",
+    "\n      Double Take\n      ",
+    "Double Take",
+    "Frigate"
   ]
 }

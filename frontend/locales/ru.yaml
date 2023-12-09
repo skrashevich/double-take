@@ -1,0 +1,29 @@
+access-tokens: Токены доступа
+create: Создать
+files: файлы
+file: файл
+token-copied: Токен скопирован
+token-deleted: Токен удален
+version-copied: Версия скопирована
+no-tokens-created: Токены не созданы
+none-selected: ни один не выбран
+restart-error-check-container-logs: 'Ошибка перезапуска: проверьте журналы контейнера'
+deleted: удалено
+no-files-found: Файлы не найдены
+addNew: добавить новый
+do-you-want-to-delete-description: Вы хотите удалить {0}?
+andRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles: и удалить {0} без обучения {1}?
+create-access-tokens-to-allow-other-applications-to-interact-with-your-double-take-api-tokens-should-be-passed-as-a-query-string-parameter-in-the-format-of: >-
+  Создайте токены доступа, чтобы другие приложения могли взаимодействовать с
+  вашим API Double Take. Токены должны передаваться как параметр строки запроса
+  в формате
+description-trained-for-this-trainingfolder: '{0} обучено для {1}'
+doYouWantToClearTheLogFile: Вы хотите очистить лог-файл?
+logFileIsEmpty: Файл журнала пустой
+do-you-want-to-train-description-for-this-trainingfolder: Вы хотите тренировать {0} для {1}?
+doYouWantToUntrainAllImagesForThisTrainingfolder: Вы хотите отменить обучение всех изображений для {0}?
+train: Обучение
+'yes': Да
+logs: Логи
+matches: Обзор
+config: Настройки

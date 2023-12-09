@@ -45,7 +45,7 @@
       </div>
       <div class="p-d-flex p-ai-center p-mt-2 theme-holder">
         <div class="p-mr-2">
-          <label class="p-d-block p-mb-1">UI Theme</label>
+          <label class="p-d-block p-mb-1">{{ $t('uiTheme') }}</label>
           <Dropdown
             v-model="themes.ui"
             :options="options.ui"
@@ -54,7 +54,7 @@
           />
         </div>
         <div class="p-mr-2">
-          <label class="p-d-block p-mb-1">Editor Theme</label>
+          <label class="p-d-block p-mb-1">{{ $t('editorTheme') }}</label>
           <Dropdown
             v-model="themes.editor"
             :options="options.editor"
@@ -232,6 +232,9 @@ export default {
   created() {
     this.file = new URLSearchParams(window.location.search).get('file');
   },
+  setup() {
+    
+  },
   async mounted() {
     try {
       this.updateHeight();
@@ -324,7 +327,7 @@ export default {
         if (reload === true) this.emitter.emit('appLoading', true);
         await Sleep(250);
         await ApiService.patch('config/theme', { ...this.themes });
-        this.emitter.emit('toast', { message: 'Theme updated' });
+        this.emitter.emit('toast', { message: t('themeUpdated') });
         if (reload === true) {
           this.emitter.emit('setTheme', this.themes.ui);
           await Sleep(1000);
@@ -459,7 +462,7 @@ export default {
         await ApiService.patch(this.file === 'secrets' ? 'config/secrets' : 'config', { code: this.code });
         this.loading = true;
         this.waitForRestart = true;
-        this.emitter.emit('toast', { message: 'Restarting to load changes' });
+        this.emitter.emit('toast', { message: t('restarting-to-load-changes') });
         clearInterval(this.statusInterval);
         delete this.mqtt.status;
         delete this.frigate.status;
@@ -469,7 +472,7 @@ export default {
         clearTimeout(this.restartTimeout);
         this.restartTimeout = setTimeout(() => {
           if (!this.socket.connected) {
-            this.emitter.emit('error', Error('Restart Error: check container logs'));
+            this.emitter.emit('error', Error(t('restart-error-check-container-logs')));
           }
         }, 10000);
       } catch (error) {
@@ -482,7 +485,7 @@ export default {
       if (!service.tooltip) return;
       try {
         copy(typeof service.tooltip === 'object' ? JSON.stringify(service.tooltip, null, '\t') : service.tooltip);
-        this.emitter.emit('toast', { message: index === 0 ? 'Version copied' : 'Tooltip copied' });
+        this.emitter.emit('toast', { message: index === 0 ? i18n.t('version-copied') : 'Tooltip copied' });
       } catch (error) {
         this.emitter.emit('error', error);
       }
