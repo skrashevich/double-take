@@ -7,9 +7,10 @@ const config = require('../../constants/config');
 
 const { AISERVER } = DETECTORS || {};
 
-const recognize = async ({ key }) => {
-  const { URL } = AISERVER;
+const recognize = async ({ key, test }) => {
+  const { URL, DET_PROB_THRESHOLD } = AISERVER;
   const formData = new FormData();
+  formData.append('min_confidence', test ? 0.4 : DET_PROB_THRESHOLD); // thnx @avbor https://github.com/codeproject/CodeProject.AI-Server/blame/main/src/modules/FaceProcessing/intelligencelayer/face.py#L292
   try {
     formData.append('image', fs.createReadStream(key));
   } catch (error) {
@@ -99,7 +100,6 @@ const normalize = ({ camera, data }) => {
       name: confidence >= UNKNOWN.CONFIDENCE ? userid.toLowerCase() : 'unknown',
       confidence,
       match:
-        userid !== 'unknown' &&
         confidence >= MATCH.CONFIDENCE &&
         (obj.x_max - obj.x_min) * (obj.y_max - obj.y_min) >= MATCH.MIN_AREA,
       box: {
@@ -109,9 +109,19 @@ const normalize = ({ camera, data }) => {
         height: obj.y_max - obj.y_min,
       },
     };
-    const checks = actions.checks({ ...detectionConfig, ...output });
-    if (checks.length) output.checks = checks;
-    if (checks !== false) acc.push(output);
+    let checks;
+    try {
+      checks = actions.checks({ ...detectionConfig, ...output });
+    } catch (e) {
+      console.error('Error performing checks on output', e);
+      return acc;
+    }
+
+    if (Array.isArray(checks) && checks.length > 0) {
+      output.checks = checks;
+    }
+
+    acc.push(output);
 
     return acc;
   }, []);
