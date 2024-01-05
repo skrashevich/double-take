@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+const { version } = require('../package.json');
+
 test('pages', async ({ page }) => {
   await page.goto('./');
   await page.getByLabel('Matches').click();
@@ -14,7 +16,7 @@ test('pages', async ({ page }) => {
 test('right-menu', async ({ page }) => {
   await page.goto('./');
   await page.getByText('Double Take').click();
-  await expect(page.getByLabel('v1.13.11.9rc0').locator('a')).toBeVisible();
+  await expect(page.getByLabel(`v${version}`).locator('a')).toBeVisible();
   await page.locator('#pv_id_1_0_2 a').click();
   await page.getByText('Double Take').click();
   await expect(page.locator('#pv_id_1_0_2 a')).toBeVisible();

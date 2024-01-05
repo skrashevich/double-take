@@ -12,6 +12,7 @@ const { BAD_REQUEST, NOT_FOUND, SERVER_ERROR } = require('../constants/http-stat
 const DETECTORS = require('../constants/config').detectors();
 const Cache = require('../util/cache.util');
 
+const db = database.connect();
 const format = async (matches) => {
   const token = AUTH && matches.length ? jwt.sign({ route: 'storage' }) : null;
   matches = await Promise.all(
@@ -52,8 +53,6 @@ module.exports.post = async (req, res) => {
   const { filters } = req.body;
   const tmptable = crypto.createHash('md5').digest('hex').toString();
 
-  const db = database.connect();
-
   const filtersHash = objhasher(filters);
 
   if (
@@ -65,7 +64,9 @@ module.exports.post = async (req, res) => {
       Cache.get('filters').matches.length === filters.matches.length &&
       Cache.get('filters').cameras.length === filters.cameras.length &&
       Cache.get('filters').types.length === filters.types.length &&
-      filters.confidence + filters.width + filters.height === 0)
+      filters.confidence + filters.width + filters.height === 0 &&
+      Cache.get('filters').gender &&
+      Cache.get('filters').gender?.value === filters.gender?.value)
   ) {
     // TOODO: Optimize by using a single query to get the count and the matches
     const query = `
@@ -107,6 +108,7 @@ module.exports.post = async (req, res) => {
   AND (json_extract(value, '$.confidence') >= ? ${confidenceQuery})
   AND json_extract(value, '$.box.width') >= ?
   AND json_extract(value, '$.box.height') >= ?
+  /* AND json_extract(value, '$.gender') IN (${database.params(filters.genders)}) */
   AND detector IN (${database.params(filters.detectors)})
         GROUP BY t.id`
   ).run(
@@ -117,6 +119,7 @@ module.exports.post = async (req, res) => {
     filters.confidence,
     filters.width,
     filters.height,
+    // filters.genders,
     filters.detectors
   );
   db.prepare(`SELECT * FROM ${tmptable}`)
@@ -154,7 +157,6 @@ module.exports.post = async (req, res) => {
 module.exports.delete = async (req, res) => {
   const { ids } = req.body;
   if (ids.length) {
-    const db = database.connect();
     // Optimize by using a transaction for batch deletion
     db.transaction(() => {
       const files = db
@@ -176,7 +178,6 @@ module.exports.reprocess = async (req, res) => {
   const { matchId } = req.params;
   if (!DETECTORS.length) return res.status(BAD_REQUEST).error('no detectors configured');
 
-  const db = database.connect();
   let [match] = db.prepare('SELECT * FROM match WHERE id = ?').bind(matchId).all();
 
   if (!match) return res.status(BAD_REQUEST).error('No match found');
@@ -214,67 +215,95 @@ module.exports.reprocess = async (req, res) => {
 };
 
 module.exports.filters = async (req, res) => {
-  if (Cache.get('filters')) return res.send(Cache.get('filters'));
+  console.debug('Fetching filters...');
 
-  const db = database.connect();
+  if (Cache.get('filters')) {
+    console.debug('Filters retrieved from cache.');
+    return res.send(Cache.get('filters'));
+  }
 
-  const [total] = db.prepare('SELECT COUNT(*) count FROM match').all();
+  try {
+    // Uncomment and update the following line with actual database connection logic if necessary
+    // const db = database.connect();
 
-  const detectors = db
-    .prepare(
-      `SELECT json_extract(value, '$.detector') name
-      FROM match, json_each(match.response)
-      GROUP BY name
-    ORDER BY name ASC`
-    )
-    .all()
-    .map((obj) => obj.name);
+    console.debug('Retrieving total count from database...');
+    const [total] = db.prepare('SELECT COUNT(*) count FROM match').all();
+    console.debug(`Total count: ${total.count}`);
 
-  const names = db
-    .prepare(
-      `SELECT json_extract(value, '$.name') name FROM (
-          SELECT json_extract(value, '$.results') results
-      FROM match, json_each(match.response)
-          ) t, json_each(t.results)
-      GROUP BY name
-    ORDER BY name ASC`
-    )
-    .all()
-    .map((obj) => obj.name);
+    console.debug('Retrieving detectors from database...');
+    const detectors = db
+      .prepare(
+        `SELECT json_extract(value, '$.detector') name
+        FROM match, json_each(match.response)
+        GROUP BY name
+        ORDER BY name ASC`
+      )
+      .all()
+      .map((obj) => obj.name);
+    console.debug(`Detectors: ${detectors}`);
 
-  const matches = db
-    .prepare(
-      `SELECT IIF(json_extract(value, '$.match') == 1, 'match', 'miss') name FROM (
-          SELECT json_extract(value, '$.results') results
-      FROM match, json_each(match.response)
-          ) t, json_each(t.results)
-      GROUP BY name
-    ORDER BY name ASC`
-    )
-    .all()
-    .map((obj) => obj.name);
+    console.debug('Retrieving names from database...');
+    const names = db
+      .prepare(
+        `SELECT json_extract(value, '$.name') name FROM (
+            SELECT json_extract(value, '$.results') results
+        FROM match, json_each(match.response)
+            ) t, json_each(t.results)
+        GROUP BY name
+        ORDER BY name ASC`
+      )
+      .all()
+      .map((obj) => obj.name);
+    console.debug(`Names: ${names}`);
 
-  const cameras = db
-    .prepare(
-      `SELECT json_extract(event, '$.camera') name
-      FROM match
-      GROUP BY name
-    ORDER BY name ASC`
-    )
-    .all()
-    .map((obj) => obj.name);
+    console.debug('Retrieving matches from database...');
+    const matches = db
+      .prepare(
+        `SELECT IIF(json_extract(value, '$.match') == 1, 'match', 'miss') name FROM (
+            SELECT json_extract(value, '$.results') results
+        FROM match, json_each(match.response)
+            ) t, json_each(t.results)
+        GROUP BY name
+        ORDER BY name ASC`
+      )
+      .all()
+      .map((obj) => obj.name);
+    console.debug(`Matches: ${matches}`);
 
-  const types = db
-    .prepare(
-      `SELECT json_extract(event, '$.type') name
-      FROM match
-      GROUP BY name
-    ORDER BY name ASC`
-    )
-    .all()
-    .map((obj) => obj.name);
+    console.debug('Retrieving cameras from database...');
+    const cameras = db
+      .prepare(
+        `SELECT json_extract(event, '$.camera') name
+        FROM match
+        GROUP BY name
+        ORDER BY name ASC`
+      )
+      .all()
+      .map((obj) => obj.name);
+    console.debug(`Cameras: ${cameras}`);
 
-  const result = { total: total.count, detectors, names, matches, cameras, types };
-  Cache.set('filters', result, 120);
-  res.send(result);
+    console.debug('Retrieving types from database...');
+    const types = db
+      .prepare(
+        `SELECT json_extract(event, '$.type') name
+        FROM match
+        GROUP BY name
+        ORDER BY name ASC`
+      )
+      .all()
+      .map((obj) => obj.name);
+    console.debug(`Types: ${types}`);
+
+    console.debug('Assigning static genders...');
+    const genders = ['male', 'female'];
+
+    const result = { total: total.count, detectors, names, matches, cameras, types, genders };
+    Cache.set('filters', result, 120);
+    console.debug('Filters cached.');
+
+    res.send(result);
+  } catch (error) {
+    console.error(`An error occurred while fetching filters: ${error.message}`);
+    res.status(500).send({ error: 'An internal server error occurred' });
+  }
 };
