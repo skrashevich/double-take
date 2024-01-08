@@ -130,7 +130,7 @@ module.exports.matches = async (req, res) => {
 
     // Note: The quality of the JPEG can't be set using Node.js canvas, it will always be maximum quality.
     // This might cause the output image to be larger than expected.
-    buffer = canvas.toBuffer('image/jpeg', QUALITY);
+    buffer = canvas.toBuffer('image/jpeg', { quality: QUALITY });
   } else {
     buffer = fs.readFileSync(source);
   }
