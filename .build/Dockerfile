@@ -13,7 +13,7 @@ COPY /frontend/.env.production /frontend/vue.config.js /frontend/vite.config.js 
 RUN bun run -b build
 
 
-FROM node:18 as build
+FROM node:21 as build
 ARG DEBIAN_FRONTEND=noninteractive
 # Prepare apt for buildkit cache
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
@@ -46,7 +46,7 @@ RUN cp /lib/*-linux-gnu*/libuuid.so.1.3.0 /opt/lib/libuuid.so.1
 
 #COPY /.build/entrypoint.sh .
 
-FROM node:18 as debug
+FROM node:21 as debug
 ARG DEBIAN_FRONTEND=noninteractive
 # Prepare apt for buildkit cache
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
@@ -67,7 +67,7 @@ EXPOSE 3000
 COPY .build/entrypoint.sh ./
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]
 
-FROM node:18-slim
+FROM node:21-slim
 ARG DEBIAN_FRONTEND=noninteractive
 # Prepare apt for buildkit cache
 RUN rm -f /etc/apt/apt.conf.d/docker-clean \
