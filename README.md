@@ -333,6 +333,7 @@ mqtt:
   client_id:
   protocol: mqtt # set to mqtts to enables TLS
   port: -1 # default value, expands to 1883 for mqtt or 8883 for mqtts
+  expire_after: 600 # timeout of home-assistant "recognised" state
 
   tls: # don't forget to set protocol: mqtts if you need secure connection
     # cert chains in PEM format: /path/to/client.crt
@@ -708,7 +709,6 @@ mqtt:
   host: localhost
   username: mqtt
   password: !secret mqtt_password
-  expire_after: 600 # timeout of home-assistant "recognised" state
 
 detectors:
   compreface:
