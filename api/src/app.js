@@ -1,10 +1,11 @@
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');
-const { UI } = require('./constants')();
 const ipfilter = require('express-ipfilter').IpFilter;
-const path = require('path');
+const { UI } = require('./constants')();
+const { getFrontendPath } = require('./util/helpers.util');
 
+require('axios-debug-log');
 require('express-async-errors');
 
 const app = express();
@@ -19,8 +20,8 @@ if (process.env.HA_ADDON === 'true' && process.env.IPFILTER === 'true') {
   app.use(ipfilter(ips, { mode: 'allow' }));
 }
 
-const frontendPath = process.env.FRONTEND || `${path.join(process.cwd(), 'frontend')}/`;
-
+const frontendPath = getFrontendPath();
+console.verbose(`Frontend path: ${frontendPath}`);
 app.use(
   UI.PATH,
   express.static(frontendPath, {
@@ -41,6 +42,10 @@ app.use(UI.PATH, (req, res) => {
       </head>`
     )
   );
+});
+
+require('express-debug')(app, {
+  extra_panels: ['other_requests', 'nav'],
 });
 
 module.exports = app;

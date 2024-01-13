@@ -41,6 +41,9 @@ module.exports = {
       cameras: 'double-take/cameras',
       homeassistant: 'homeassistant',
     },
+    username: process.env.MQTT_USER ?? null,
+    password: process.env.MQTT_PASSWORD ?? null,
+    host: process.env.MQTT_HOST ?? 'localhost',
     expire_after: 600,
   },
   opencv: {
@@ -60,6 +63,7 @@ module.exports = {
       opencv_face_required: false,
     },
     aiserver: {
+      det_prob_threshold: 0.4,
       timeout: 15,
       opencv_face_required: false,
     },

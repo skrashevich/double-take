@@ -1,11 +1,11 @@
 # syntax = docker/dockerfile:1.4
 
-FROM --platform=$BUILDPLATFORM oven/bun:1.0.15 AS frontend-builder
+FROM --platform=$BUILDPLATFORM oven/bun:1.0.22 AS frontend-builder
 ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR /build
 RUN apt-get -y update && apt-get install -y --no-install-recommends curl bash unzip
 
-COPY /frontend/package.json .
+COPY /frontend/package.json /frontend/package-lock.json ./
 RUN bun install
 COPY /frontend/src ./src
 COPY /frontend/public ./public
@@ -25,7 +25,7 @@ apt install -y curl bash jq unzip wget
 apt install -y gcc g++ make libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev ccache
 EOT
 WORKDIR /double-take/api
-COPY /api/package.json .
+COPY /api/package.json /api/package-lock.json ./
 ENV CC="ccache gcc"
 ENV CXX="ccache g++"
 RUN npm config set fetch-retries 20 && npm install -g npm@^10.2.4 && npm install
@@ -45,26 +45,6 @@ RUN cp /lib/*-linux-gnu*/libuuid.so.1.3.0 /opt/lib/libuuid.so.1
 
 #COPY /.build/entrypoint.sh .
 
-FROM node:18 as debug
-ARG DEBIAN_FRONTEND=noninteractive
-# Prepare apt for buildkit cache
-RUN rm -f /etc/apt/apt.conf.d/docker-clean \
-  && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' >/etc/apt/apt.conf.d/keep-cache
-COPY --link --from=build /double-take /double-take
-COPY --from=build /opt/lib/* /lib/
-
-RUN --mount=type=cache,target=/var/cache/apt,sharing=locked --mount=type=cache,target=/var/lib/apt,sharing=locked <<EOT
-apt update
-apt install -y --no-install-recommends dnsutils inetutils-ping inetutils-traceroute net-tools curl jq
-EOT
-
-RUN npm install nodemon -g
-
-WORKDIR /double-take
-EXPOSE 3000
-COPY .build/entrypoint.sh ./
-ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]
-
 FROM node:18-slim
 ARG DEBIAN_FRONTEND=noninteractive
 # Prepare apt for buildkit cache
@@ -78,9 +58,12 @@ EOT
 COPY --link --from=build /double-take /double-take
 COPY --from=build /opt/lib/* /lib/
 
+RUN mkdir /.storage && ln -s /.storage /double-take/.storage
+
 RUN npm install nodemon -g
 
 WORKDIR /double-take
 COPY .build/entrypoint.sh ./
 EXPOSE 3000
+VOLUME [ "/.storage" ]
 ENTRYPOINT ["/bin/bash", "./entrypoint.sh"]
