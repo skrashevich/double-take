@@ -6,7 +6,7 @@ module.exports = {
   env: {
     es2022: true,
   },
-  extends: ['plugin:vue/vue3-essential', '@vue/prettier', '@vue/airbnb', 'plugin:@intlify/vue-i18n/recommended'],
+  extends: ['plugin:vue/vue3-essential', '@vue/prettier', '@vue/airbnb', 'plugin:@intlify/vue-i18n/recommended', 'plugin:vuejs-accessibility/recommended'],
   rules: {
     // Only allow debugger in development
     'no-debugger': process.env.PRE_COMMIT ? 'error' : 'warn',

@@ -224,6 +224,27 @@
             </MultiSelect>
           </div>
         </div>
+        <div class="p-col custom-col">
+          <div class="p-fluid">
+            <label class="p-d-block p-mb-1">Gender</label>
+            <MultiSelect
+              v-model="selected.genders"
+              :options="dropdowns.genders"
+              v-on:change="emitter.emit('updateFilter')"
+              @show="fixSelectPanel(true, 4)"
+              @hide="fixSelectPanel(false)"
+            >
+              <template v-slot:value="slotProps">
+                <div v-for="(option, index) of slotProps.value" :key="option" class="p-d-inline-flex p-mr-1">
+                  <div>{{ option + addComma(slotProps.value.length, index) }}</div>
+                </div>
+              </template>
+              <template v-slot:option="slotProps">
+                <div>{{ slotProps.option }}</div>
+              </template>
+            </MultiSelect>
+          </div>
+        </div>
         <div class="p-col custom-col-xsm">
           <div class="p-fluid">
             <label class="p-d-block p-mb-1" v-tooltip.left="'Minimum confidence (%)'">%</label>
@@ -319,6 +340,7 @@ export default {
       confidence: 0,
       width: 0,
       height: 0,
+      genders: [],
     },
     selected: {},
     socketClass: 'p-badge-secondary',
@@ -524,7 +546,7 @@ export default {
     },
     dropdowns: {
       handler(value) {
-        ['names', 'detectors', 'matches', 'cameras', 'types'].forEach((key) => {
+        ['names', 'detectors', 'matches', 'cameras', 'types', 'genders'].forEach((key) => {
           if (
             JSON.stringify(
               this.selected[key] ? this.selected[key].flatMap((item) => (value[key].includes(item) ? item : [])) : [],
@@ -538,7 +560,7 @@ export default {
     },
     selected: {
       handler(value) {
-        ['names', 'detectors', 'matches', 'cameras', 'types'].forEach((key) => {
+        ['names', 'detectors', 'matches', 'cameras', 'types', 'genders'].forEach((key) => {
           this.filters[key] = value?.[key] || [];
         });
       },
