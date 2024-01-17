@@ -1,6 +1,21 @@
 <template>
   <div class="tool-bar-wrapper p-pr-3 p-d-flex p-jc-between p-ai-center" ref="toolbar">
-    <div><TabMenu :model="navigation" class="navigation" :class="{ show: showNavigation }" /></div>
+    <div>
+      <TabMenu :model="navigation" class="navigation" :class="{ show: showNavigation }">
+        <template v-slot:item="{ item, props }">
+          <router-link v-if="item.route" v-slot="{ href, navigate }" :to="item.route" custom>
+            <a :href="href" v-bind="props.action" @click="navigate">
+              <span v-bind="props.icon" />
+              <span v-bind="props.label">{{ item.label }}</span>
+            </a>
+          </router-link>
+          <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+            <span v-bind="props.icon" />
+            <span v-bind="props.label">{{ item.label }}</span>
+          </a>
+        </template>
+      </TabMenu>
+    </div>
     <div v-if="updateAvailable" class="version p-ml-auto p-mr-2" v-tooltip.left="`Update Available`">
       <div class="icon" @click="gitHub" />
     </div>
@@ -80,10 +95,10 @@ export default {
       verify: null,
     },
     navigation: [
-      { label: t('matches'), icon: 'pi pi-fw fa fa-portrait', to: '/' },
-      { label: t('train'), icon: 'pi pi-fw fa fa-images', to: '/train' },
-      { label: t('config'), icon: 'pi pi-fw pi-cog', to: '/config' },
-      { label: t('logs'), icon: 'pi pi-fw pi-file', to: '/logs' },
+      { label: t('matches'), icon: 'pi pi-fw fa fa-portrait', route: '/' },
+      { label: t('train'), icon: 'pi pi-fw fa fa-images', route: '/train' },
+      { label: t('config'), icon: 'pi pi-fw pi-cog', route: '/config' },
+      { label: t('logs'), icon: 'pi pi-fw pi-file', route: '/logs' },
     ],
     menu: [],
     unauthorizedMenu: [
@@ -96,7 +111,7 @@ export default {
               window.open('https://github.com/sponsors/jakowenko');
             },
           },
-          { label: t('logs'), icon: 'pi pi-fw pi-file', to: '/logs' },
+          { label: t('logs'), icon: 'pi pi-fw pi-file', route: '/logs' },
         ],
       },
     ],
@@ -110,8 +125,8 @@ export default {
               window.open('https://github.com/sponsors/jakowenko');
             },
           },
-          { label: t('logs'), icon: 'pi pi-fw pi-file', to: '/logs' },
-          { label: t('access-tokens'), icon: 'pi pi-fw pi-key', to: '/tokens' },
+          { label: t('logs'), icon: 'pi pi-fw pi-file', route: '/logs' },
+          { label: t('access-tokens'), icon: 'pi pi-fw pi-key', route: '/tokens' },
           {
             label: t('changePassword'),
             icon: 'pi pi-fw pi-lock',

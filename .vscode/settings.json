@@ -19,5 +19,9 @@
     "\n      Double Take\n      ",
     "Double Take",
     "Frigate"
-  ]
+  ],
+  "jest.debugMode": true,
+  "jest.disabledWorkspaceFolders": [
+    "frontend"
+  ],
 }
