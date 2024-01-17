@@ -14,7 +14,7 @@
         />
       </div>
       <div class="p-mr-2">
-        <Button label="$t('cancel')" class="p-button-text p-button-sm p-ml-2" @click="createFolder.show = false" />
+        <Button :label="$t('cancel')" class="p-button-text p-button-sm p-ml-2" @click="createFolder.show = false" />
       </div>
     </div>
     <div v-else class="p-d-flex p-jc-between">
@@ -49,7 +49,7 @@
             <Button
               class="responsive-button p-button-success p-button-sm"
               icon="pi pi-check"
-              label="$t('train')"
+              :label="$t('train')"
               :disabled="matches.selected.length === 0 || !folder"
               @click="$parent.train"
             />

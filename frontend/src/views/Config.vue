@@ -232,9 +232,6 @@ export default {
   created() {
     this.file = new URLSearchParams(window.location.search).get('file');
   },
-  setup() {
-    
-  },
   async mounted() {
     try {
       this.updateHeight();
@@ -485,7 +482,7 @@ export default {
       if (!service.tooltip) return;
       try {
         copy(typeof service.tooltip === 'object' ? JSON.stringify(service.tooltip, null, '\t') : service.tooltip);
-        this.emitter.emit('toast', { message: index === 0 ? i18n.t('version-copied') : 'Tooltip copied' });
+        this.emitter.emit('toast', { message: index === 0 ? t('version-copied') : 'Tooltip copied' });
       } catch (error) {
         this.emitter.emit('error', error);
       }

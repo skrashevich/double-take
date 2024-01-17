@@ -22,3 +22,29 @@ cancel: Stornieren
 currentPassword: Aktuelles Passwort
 file: Datei
 files: Dateien
+'yes': Ja
+train: Zug
+changePassword: Passwort ändern
+config: Konfiguration
+editorTheme: Editor-Thema
+hello: Hallo
+logFileIsEmpty: Die Protokolldatei ist leer
+logs: Protokolle
+matches: Streichhölzer
+newPassword: Neues Passwort
+no-files-found: Keine Dateien gefunden
+no-tokens-created: Keine Tokens erstellt
+none-selected: keine ausgewählt
+passwordUpdated: Passwort aktualisiert
+restart-error-check-container-logs: 'Neustartfehler: Überprüfen Sie die Containerprotokolle'
+restarting-to-load-changes: Neustart zum Laden von Änderungen
+signOut: Abmelden
+sponsor: Sponsor
+sync: Synchronisieren
+themeUpdated: Thema aktualisiert
+token-copied: Token kopiert
+token-deleted: Token gelöscht
+uiTheme: UI-Thema
+updatePassword: Passwort aktualisieren
+verifyPassword: Passwort überprüfen
+version-copied: Kopierte Version

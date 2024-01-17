@@ -9,7 +9,7 @@
         class="p-ml-auto p-mr-2 token-name"
         @keyup.enter="create"
       />
-      <Button type="button" label="$t('create')" class="p-button-sm p-button-success" :disabled="!name" @click="create" />
+      <Button type="button" :label="$t('create')" class="p-button-sm p-button-success" :disabled="!name" @click="create" />
     </div>
     <p>
       {{ $t('create-access-tokens-to-allow-other-applications-to-interact-with-your-double-take-api-tokens-should-be-passed-as-a-query-string-parameter-in-the-format-of') }} <span class="code">?token=TOKEN</span>.
