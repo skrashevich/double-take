@@ -32,7 +32,9 @@ const format = async (matches) => {
       let zones;
       let updatedAt;
       try {
-        const eventObject = JSON.parse(event);
+        // Attempt to clean up and parse the JSON string
+        const cleanedEvent = event.replace(/^\ufeff/, '').trim();
+        const eventObject = JSON.parse(cleanedEvent);
         camera = eventObject.camera;
         type = eventObject.type;
         zones = eventObject.zones;
@@ -40,16 +42,21 @@ const format = async (matches) => {
       } catch (error) {
         // Handle JSON parsing errors for event
         console.error('Event parsing error:', error, String(event));
-        // You may want to handle this differently depending on your use case
+        // Defaulting the values when an error occurs,
+
+        camera = '';
+        type = '';
+        zones = [];
+        updatedAt = null;
       }
 
       let parsedResponse;
       try {
-        parsedResponse = JSON.parse(response);
+        const clearedResponse = response.replace(/^\ufeff/, '').trim();
+        parsedResponse = JSON.parse(clearedResponse);
       } catch (error) {
         // Handle JSON parsing errors for response
-        console.error('Response parsing error:', error);
-        // Again, handling may vary based on use case
+        console.error('Response parsing error:', error, String(response));
       }
 
       let width = 0;
@@ -220,7 +227,10 @@ module.exports.reprocess = async (req, res) => {
   const { matchId } = req.params;
   if (!DETECTORS.length) return res.status(BAD_REQUEST).error('no detectors configured');
 
-  let [match] = db.prepare('SELECT * FROM match WHERE id = ?').bind(matchId).all();
+  let [match] = db
+    .prepare('SELECT *,json(event) as event FROM match WHERE id = ?')
+    .bind(matchId)
+    .all();
 
   if (!match) return res.status(BAD_REQUEST).error('No match found');
 
