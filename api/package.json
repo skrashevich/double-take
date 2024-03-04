@@ -58,6 +58,6 @@
     "socket.io": "^4.7.4",
     "traverse": "^0.6.6",
     "uuid": "^9.0.0",
-    "winston": "^3.7.2"
+    "winston": "^3.12.0"
   }
 }
