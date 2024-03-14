@@ -34,7 +34,7 @@
     "primevue": "<3.48.0",
     "prismjs": "1.29.0",
     "pulltorefreshjs": "0.1.22",
-    "socket.io-client": "4.7.4",
+    "socket.io-client": "4.7.5",
     "v-lazy-image": "2.1.1",
     "v-pagination-3": "0.1.7",
     "vue": "3.4.20",
