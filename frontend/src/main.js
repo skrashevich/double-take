@@ -3,9 +3,9 @@ import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
 import ToastService from 'primevue/toastservice';
-import App from '@/App.vue';
-import router from '@/router';
-import emitter from '@/services/emitter.service';
+import App from './App.vue';
+import router from './router';
+import emitter from './services/emitter.service';
 
 const app = createApp({
   ...App,
