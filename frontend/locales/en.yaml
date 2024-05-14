@@ -1,0 +1,49 @@
+no-files-found: No files found
+confirmation: Confirmation
+do-you-want-to-delete-description: Do you want to delete {0}?
+files: files
+file: file
+do-you-want-to-train-description-for-this-trainingfolder: Do you want to train {0} for {1}?
+none-selected: none selected
+description-trained-for-this-trainingfolder: '{0} trained for {1}'
+deleted: deleted
+create-access-tokens-to-allow-other-applications-to-interact-with-your-double-take-api-tokens-should-be-passed-as-a-query-string-parameter-in-the-format-of: >-
+  Create access tokens to allow other applications to interact with your Double
+  Take API. Tokens should be passed as a query string parameter in the format of
+create: Create
+no-tokens-created: No tokens created
+access-tokens: Access Tokens
+token-copied: Token copied
+token-deleted: Token deleted
+restart-error-check-container-logs: 'Restart Error: check container logs'
+version-copied: Version copied
+restarting-to-load-changes: Restarting to load changes
+logFileIsEmpty: Log file is empty
+doYouWantToClearTheLogFile: Do you want to clear the log file?
+addNew: add new
+doYouWantToUntrainTrainedLengthTrainedLength_1FileFilesFromNamesJoinAnd: Do you want to untrain {0} {1} from {2}
+andRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles: and remove {0} untrained {1}?
+doYouWantToRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles: Do you want to remove {0} untrained {1}?
+doYouWantToUntrainAllImagesForThisTrainingfolder: Do you want to untrain all images for {0}?
+doYouWantToSyncAllImagesForThisTrainingfolderThisWillUntrainAndRetrainAllImagesForTheConfiguredDetectors: >-
+  Do you want to sync all images for {0}? This will untrain and retrain all
+  images for the configured detectors.
+updatePassword: Update Password
+currentPassword: Current Password
+newPassword: New Password
+verifyPassword: Verify Password
+cancel: Cancel
+'yes': 'Yes'
+matches: Matches
+train: Train
+config: Config
+logs: Logs
+sponsor: Sponsor
+changePassword: Change Password
+signOut: Sign Out
+passwordUpdated: Password Updated
+uiTheme: UI Theme
+editorTheme: Editor Theme
+themeUpdated: Theme updated
+sync: Sync
+hello: Hello

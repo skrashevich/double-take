@@ -44,32 +44,37 @@
         style="min-width: 300px"
       >
         <template v-slot:header>
-          <strong>Update Password</strong>
+          <strong>{{ $t('updatePassword') }}</strong>
         </template>
-        <label for="currentPassword" class="p-d-block p-mb-1">Current Password</label>
+        <label for="currentPassword" class="p-d-block p-mb-1">{{ $t('currentPassword') }}</label>
         <InputText id="currentPassword" type="password" v-model="password.current" class="p-d-block p-mb-2" />
-        <label for="newPassword" class="p-d-block p-mb-1">New Password</label>
+        <label for="newPassword" class="p-d-block p-mb-1">{{ $t('newPassword') }}</label>
         <InputText id="newPassword" type="password" v-model="password.new" class="p-d-block p-mb-2" />
-        <label for="verifyPassword" class="p-d-block p-mb-1">Verify Password</label>
+        <label for="verifyPassword" class="p-d-block p-mb-1">{{ $t('verifyPassword') }}</label>
         <InputText id="verifyPassword" type="password" v-model="password.verify" class="p-d-block" />
         <template v-slot:footer>
-          <Button label="Cancel" class="p-button-text" @click="$router.push($route.path)" />
-          <Button label="Yes" :disabled="isDisabled" @click="updatePassword" />
+          <Button :label="$t('cancel')" class="p-button-text" @click="$router.push($route.path)" />
+          <Button :label="$t('yes')" :disabled="isDisabled" @click="updatePassword" />
         </template>
       </Dialog>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import Menu from 'primevue/menu';
 import TabMenu from 'primevue/tabmenu';
 import Dialog from 'primevue/dialog';
 import Button from 'primevue/button';
 import InputText from 'primevue/inputtext';
+import { useI18n } from 'vue-i18n';
 import ApiService from '../services/api.service';
 import { version } from '../../package.json';
 
+const { t } = useI18n({ useScope: 'global' });
+</script>
+
+<script>
 export default {
   components: {
     TabMenu,
@@ -90,23 +95,23 @@ export default {
       verify: null,
     },
     navigation: [
-      { label: 'Matches', icon: 'pi pi-fw fa fa-portrait', route: '/' },
-      { label: 'Train', icon: 'pi pi-fw fa fa-images', route: '/train' },
-      { label: 'Config', icon: 'pi pi-fw pi-cog', route: '/config' },
-      { label: 'Logs', icon: 'pi pi-fw pi-file', route: '/logs' },
+      { label: t('matches'), icon: 'pi pi-fw fa fa-portrait', route: '/' },
+      { label: t('train'), icon: 'pi pi-fw fa fa-images', route: '/train' },
+      { label: t('config'), icon: 'pi pi-fw pi-cog', route: '/config' },
+      { label: t('logs'), icon: 'pi pi-fw pi-file', route: '/logs' },
     ],
     menu: [],
     unauthorizedMenu: [
       {
         items: [
           {
-            label: 'Sponsor',
+            label: t('sponsor'),
             icon: 'pi pi-heart',
             command: () => {
               window.open('https://github.com/sponsors/jakowenko');
             },
           },
-          { label: 'Logs', icon: 'pi pi-fw pi-file', route: '/logs' },
+          { label: t('logs'), icon: 'pi pi-fw pi-file', route: '/logs' },
         ],
       },
     ],
@@ -114,21 +119,21 @@ export default {
       {
         items: [
           {
-            label: 'Sponsor',
+            label: t('sponsor'),
             icon: 'pi pi-heart',
             command: () => {
               window.open('https://github.com/sponsors/jakowenko');
             },
           },
-          { label: 'Logs', icon: 'pi pi-fw pi-file', route: '/logs' },
-          { label: 'Access Tokens', icon: 'pi pi-fw pi-key', route: '/tokens' },
+          { label: t('logs'), icon: 'pi pi-fw pi-file', route: '/logs' },
+          { label: t('access-tokens'), icon: 'pi pi-fw pi-key', route: '/tokens' },
           {
-            label: 'Change Password',
+            label: t('changePassword'),
             icon: 'pi pi-fw pi-lock',
             to: '?password',
           },
           {
-            label: 'Sign Out',
+            label: t('signOut'),
             icon: 'pi pi-fw pi-power-off',
             to: '/logout',
             auth: true,
@@ -178,7 +183,7 @@ export default {
       try {
         await ApiService.patch('auth/password', { password: this.password.current, newPassword: this.password.new });
         this.$router.push('/logout');
-        this.emitter.emit('toast', { message: 'Password Updated' });
+        this.emitter.emit('toast', { message: t('passwordUpdated') });
         this.password.current = null;
         this.password.new = null;
         this.password.verify = null;

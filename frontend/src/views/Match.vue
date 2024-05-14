@@ -18,7 +18,7 @@
     >
       <i class="pi pi-spin pi-spinner p-as-center" style="font-size: 2.5rem"></i>
       <div v-if="showNoFiles" class="p-mt-5 p-text-center p-as-center" style="width: 100%">
-        <p class="p-text-bold p-mb-3">No files found</p>
+        <p class="p-text-bold p-mb-3">{{ $t('no-files-found') }}</p>
         <DataTable class="filter-table p-datatable-sm" :value="filterHelpText()" responsiveLayout="scroll">
           <Column>
             <template v-slot:body="slotProps">
@@ -259,11 +259,11 @@ export default {
         async files() {
           try {
             const description = `${$this.matches.selected.length} ${
-              $this.matches.selected.length > 1 ? 'files' : 'file'
+              $this.matches.selected.length > 1 ? t('files') : t('file')
             }`;
             $this.$confirm.require({
-              header: 'Confirmation',
-              message: `Do you want to delete ${description}?`,
+              header: t('confirmation'),
+              message: t('do-you-want-to-delete-description', [description]),
               acceptClass: 'p-button-danger',
               position: 'top',
               accept: async () => {
@@ -274,7 +274,7 @@ export default {
                   const { areAllSelected } = $this;
                   $this.matches.disabled = $this.matches.disabled.concat($this.matches.selected);
                   $this.matches.selected = [];
-                  $this.emitter.emit('toast', { message: `${description} deleted` });
+                  $this.emitter.emit('toast', { message: `${description} ${t('deleted')}`, type: `deleted` });
                   if (areAllSelected) {
                     $this.clear(['source', 'selected', 'disabled', 'loaded']);
                     await $this.get().matches({ filters: false });
@@ -294,8 +294,8 @@ export default {
       const $this = this;
       const description = `${this.matches.selected.length} ${this.matches.selected.length > 1 ? 'files' : 'file'}`;
       this.$confirm.require({
-        header: 'Confirmation',
-        message: `Do you want to train ${description} for ${this.trainingFolder}?`,
+        header: this.$t('confirmation'),
+        message: this.$t('do-you-want-to-train-description-for-this-trainingfolder', [description, this.trainingFolder]),
         acceptClass: 'p-button-success',
         position: 'top',
         accept: async () => {
@@ -308,7 +308,7 @@ export default {
               if (index !== -1) $this.matches.source[index].isTrained = true;
             });
             $this.matches.selected = [];
-            $this.emitter.emit('toast', { message: `${description} trained for ${this.trainingFolder}` });
+            $this.emitter.emit('toast', { message: t('description-trained-for-this-trainingfolder', [description, this.trainingFolder]) });
           } catch (error) {
             $this.emitter.emit('error', error);
           }
@@ -339,7 +339,7 @@ export default {
         const newValue = Array.isArray(this.filters[key])
           ? this.filters[key].length
             ? this.filters[key].join(', ')
-            : 'none selected'
+            : t('none-selected')
           : this.filters[key];
         filters.push({ key, value: newValue });
       }

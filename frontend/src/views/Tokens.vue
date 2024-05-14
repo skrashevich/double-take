@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper p-p-3">
     <div class="p-d-flex p-ai-center">
-      <h1 class="p-m-0">Access Tokens</h1>
+      <h1 class="p-m-0">{{ $t('access-tokens') }}</h1>
       <InputText
         type="text"
         v-model="name"
@@ -9,11 +9,10 @@
         class="p-ml-auto p-mr-2 token-name"
         @keyup.enter="create"
       />
-      <Button type="button" label="Create" class="p-button-sm p-button-success" :disabled="!name" @click="create" />
+      <Button type="button" :label="$t('create')" class="p-button-sm p-button-success" :disabled="!name" @click="create" />
     </div>
     <p>
-      Create access tokens to allow other applications to interact with your Double Take API. Tokens should be passed as
-      a query string parameter in the format of <span class="code">?token=TOKEN</span>.
+      {{ $t('create-access-tokens-to-allow-other-applications-to-interact-with-your-double-take-api-tokens-should-be-passed-as-a-query-string-parameter-in-the-format-of') }} <span class="code">?token=TOKEN</span>.
     </p>
 
     <ul v-if="tokens.length">
@@ -26,7 +25,7 @@
         </div>
       </li>
     </ul>
-    <div v-else class="p-mt-5 p-text-center">No tokens created</div>
+    <div v-else class="p-mt-5 p-text-center">{{ $t('no-tokens-created') }}</div>
   </div>
 </template>
 
@@ -69,7 +68,7 @@ export default {
     async remove(token) {
       try {
         await ApiService.delete(`auth/tokens/${token}`);
-        this.emitter.emit('toast', { message: 'Token deleted' });
+        this.emitter.emit('toast', { message: this.$t('token-deleted') });
         this.get();
       } catch (error) {
         this.emitter.emit('error', error);
@@ -78,7 +77,7 @@ export default {
     copy(token) {
       try {
         copy(token);
-        this.emitter.emit('toast', { message: 'Token copied' });
+        this.emitter.emit('toast', { message: this.$t('token-copied') });
       } catch (error) {
         this.emitter.emit('error', error);
       }

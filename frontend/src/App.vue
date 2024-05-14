@@ -18,10 +18,11 @@ import 'primevue/resources/primevue.min.css';
 import 'primeflex/primeflex.css';
 import 'primeicons/primeicons.css';
 
-import Constants from '@/util/constants.util';
-import ApiService from '@/services/api.service';
-import Toolbar from '@/components/Toolbar.vue';
-import '@/assets/font-awesome/css/all.min.css';
+import { useI18n } from 'vue-i18n';
+import Constants from './util/constants.util';
+import ApiService from './services/api.service';
+import Toolbar from './components/Toolbar.vue';
+import './assets/font-awesome/css/all.min.css';
 
 export default {
   name: 'Double Take',
@@ -38,6 +39,10 @@ export default {
     hidden: false,
     lastTheme: null,
   }),
+  setup() {
+    const { t } = useI18n();
+    return t;
+  },
   created() {
     this.getTheme();
     this.checkLoginState().then((runSetup) => {
@@ -138,7 +143,7 @@ export default {
       }
     },
     error(error) {
-      if (error?.response?.config?.url !== 'auth' && error?.response?.status === 401) return;
+      if (error && error.response.config.url !== 'auth' && error.response.status === 401) return;
       // if (process.env.NODE_ENV === 'development') console.error(error);
       this.$toast.add({
         severity: 'error',

@@ -23,7 +23,7 @@
         </div>
       </div>
       <div v-if="!loading.status && !loading.files && !matches.source.length" class="p-text-center p-as-center">
-        <p class="p-text-bold p-mb-3">No files found</p>
+        <p class="p-text-bold p-mb-3">{{ $t('no-files-found') }}</p>
       </div>
     </div>
     <div class="p-d-flex p-jc-center p-flex-column" :class="isPaginationVisible ? 'pagination-padding' : ''">
@@ -50,6 +50,7 @@ import Sleep from '../util/sleep.util';
 import ApiService from '../services/api.service';
 import Header from '../components/Header.vue';
 import Pagination from '../components/Pagination.vue';
+
 
 export default {
   components: {
@@ -103,8 +104,8 @@ export default {
   created() {
     this.emitter.on('trainingFolder', (value) => {
       let shouldRefresh = false;
-      if (value !== 'add new' && value !== null) shouldRefresh = true;
-      if (value === null && this.trainingFolder !== 'add new') shouldRefresh = true;
+      if (value !== this.$t('addNew') && value !== null) shouldRefresh = true;
+      if (value === null && this.trainingFolder !== this.$t('addNew')) shouldRefresh = true;
       this.trainingFolder = value;
       if (shouldRefresh) {
         this.clear(['source', 'selected', 'disabled', 'loaded']);
@@ -252,20 +253,16 @@ export default {
             const names = [...new Set(trained.map((obj) => obj.name))];
             let message = '';
             if (trained.length) {
-              message = `Do you want to untrain ${trained.length} ${
-                trained.length === 1 ? 'file' : 'files'
-              } from ${names.join(' and ')}`;
+              message = t('doYouWantToUntrainTrainedLengthTrainedLength_1FileFilesFromNamesJoinAnd', [trained.length, trained.length === 1 ? 'file' : 'files', names.join(' and ')]);
             }
             if (trained.length && untrained.length) {
-              message += ` and remove ${untrained.length} untrained ${untrained.length === 1 ? 'file' : 'files'}?`;
+              message += t('andRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles', [untrained.length, untrained.length === 1 ? 'file' : 'files']);
             } else if (!trained.length && untrained.length) {
-              message += `Do you want to remove ${untrained.length} untrained ${
-                untrained.length === 1 ? 'file' : 'files'
-              }?`;
+              message += t('doYouWantToRemoveUntrainedLengthUntrainedUntrainedLength_1FileFiles', [untrained.length, untrained.length === 1 ? 'file' : 'files']);
             }
 
             $this.$confirm.require({
-              header: 'Confirmation',
+              header: t('confirmation'),
               message,
               acceptClass: 'p-button-danger',
               position: 'top',
@@ -300,8 +297,8 @@ export default {
       this.emitter.emit('clearSelected');
       const $this = this;
       this.$confirm.require({
-        header: 'Confirmation',
-        message: `Do you want to untrain all images for ${this.trainingFolder}?`,
+        header: t('confirmation'),
+        message: t('doYouWantToUntrainAllImagesForThisTrainingfolder', [this.trainingFolder]),
         acceptClass: 'p-button-danger',
         position: 'top',
         accept: async () => {
@@ -318,8 +315,8 @@ export default {
       this.emitter.emit('clearSelected');
       const $this = this;
       this.$confirm.require({
-        header: 'Confirmation',
-        message: `Do you want to sync all images for ${this.trainingFolder}? This will untrain and retrain all images for the configured detectors.`,
+        header: t('confirmation'),
+        message: t('doYouWantToSyncAllImagesForThisTrainingfolderThisWillUntrainAndRetrainAllImagesForTheConfiguredDetectors', [this.trainingFolder]),
         acceptClass: 'p-button-success',
         position: 'top',
         accept: async () => {

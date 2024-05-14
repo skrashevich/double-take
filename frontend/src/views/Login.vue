@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper p-text-center">
     <img alt="Double Take" class="p-d-block" src="@/assets/img/icon.svg" style="width: 100px" />
-    <i v-if="loading" class="pi pi-spin pi-spinner" style="font-size: 3rem; margin-top: 25px"></i>
+    <i v-if="loading" class="pi pi-spin pi-spinner" style="font-size: 3rem; margin-top: 25px" />
     <div v-else class="login-box">
       <div class="p-formgroup-inline p-d-inline-flex p-ai-center">
         <div class="p-field">

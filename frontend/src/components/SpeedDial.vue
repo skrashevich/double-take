@@ -22,15 +22,15 @@
             @click="onItemClick($event, item)"
             v-ripple
           >
-            <span v-if="item.icon" :class="['p-speeddial-action-icon', item.icon]"></span>
+            <span v-if="item.icon" :class="['p-speeddial-action-icon', item.icon]" />
           </a>
         </template>
-        <component v-else :is="$slots.item" :item="item"></component>
+        <component v-else :is="$slots.item" :item="item" />
       </li>
     </ul>
   </div>
   <template v-if="mask">
-    <div :class="maskClassName" :style="maskStyle"></div>
+    <div :class="maskClassName" :style="maskStyle" />
   </template>
 </template>
 
@@ -312,7 +312,9 @@ export default {
 .p-speeddial-item {
   transform: scale(0);
   opacity: 0;
-  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, opacity 0.8s;
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+    opacity 0.8s;
   will-change: transform;
 }
 .p-speeddial-action {

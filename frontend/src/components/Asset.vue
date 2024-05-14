@@ -11,23 +11,29 @@
                   `${constants().api}/storage/${asset.file.key}?box=true${asset.token ? `&token=${asset.token}` : ''}`,
                 )
               "
-            ></i>
+            />
           </div>
-          <div class="selected-overlay" :class="{ selected: selected }"></div>
+          <div class="selected-overlay" :class="{ selected: selected }" />
           <div v-for="detector in results" :key="detector">
             <div
               v-if="detector.box !== undefined && loaded"
               :class="'box ' + detector.detector"
               :style="box(detector.box)"
-            ></div>
+            />
           </div>
           <div v-if="selectedDetector" class="asset-result p-p-2">
-            <pre>{{ { ...selectedDetector.result, createdAt: formatTime(asset.createdAt), updatedAt: asset.updatedAt ? formatTime(asset.updatedAt) : asset.updatedAt} }}</pre>
+            <pre>{{
+              {
+                ...selectedDetector.result,
+                createdAt: formatTime(asset.createdAt),
+                updatedAt: asset.updatedAt ? formatTime(asset.updatedAt) : asset.updatedAt,
+              }
+            }}</pre>
           </div>
 
           <div class="ratio" :style="{ paddingTop: (asset.file.height / asset.file.width) * 100 + '%' }">
             <div v-if="!loaded" style="position: absolute; top: 50%; left: 50%; margin-left: -0.75rem">
-              <i class="pi pi-spin pi-spinner" style="font-size: 1.5rem"></i>
+              <i class="pi pi-spin pi-spinner" style="font-size: 1.5rem" />
             </div>
             <VLazyImage
               ref="thumbnail"
@@ -59,11 +65,11 @@
                           : { index: slotProps.index, result: slotProps.data }
                     "
                   />
-                  <div :class="'icon ' + slotProps.data.detector"></div>
+                  <div :class="'icon ' + slotProps.data.detector" />
                 </div>
               </template>
             </Column>
-            <Column field="name" header="Name"></Column>
+            <Column field="name" header="Name" />
             <Column header="%">
               <template v-slot:body="slotProps">
                 <div
