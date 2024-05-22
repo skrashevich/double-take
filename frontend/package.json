@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/skrashevich/double-take#readme",
   "dependencies": {
-    "ace-builds": "1.32.6",
+    "ace-builds": "1.34.0",
     "ace-code": "1.32.6",
     "ace-linters": "1.1.0",
     "axios": "1.6.7",
