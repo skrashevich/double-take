@@ -1,7 +1,7 @@
 const fs = require('fs');
 const axios = require('axios');
 const sizeOf = require('probe-image-size');
-const { createCanvas, loadImage, registerFont } = require('canvas');
+const { createCanvas, loadImage, registerFont, createImageData } = require('canvas');
 const { jwt } = require('../util/auth.util');
 const filesystem = require('../util/fs.util');
 const database = require('../util/db.util');
@@ -10,6 +10,26 @@ const { BAD_REQUEST } = require('../constants/http-status');
 const { AUTH, SERVER, UI } = require('../constants')();
 const { PATH } = require('../constants')().STORAGE.MEDIA;
 const { QUALITY, WIDTH } = require('../constants')().UI.THUMBNAILS;
+const webp = require('webp-wasm');
+
+var localloadImage = async(source) => {
+  let image;
+
+  try {
+    image = await loadImage(source);
+  } catch (error) {
+    //console.warn("Trying the webp method");
+
+    let inBuf = await fs.readFileSync(source);
+    let wimage = await webp.decode(inBuf);
+    let imgData = createImageData(wimage.data, wimage.width, wimage.height);
+
+    // Naming is not good but drawimage should be able to use a canvas as image parameter and successfully scale
+    image = createCanvas(imgData.width, imgData.height);
+    image.getContext("2d").putImageData(imgData, 0, 0);
+   }
+  return image;
+};
 
 module.exports.matches = async (req, res) => {
   const { box: showBox } = req.query;
@@ -44,7 +64,7 @@ module.exports.matches = async (req, res) => {
     }
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext('2d');
-    const image = await loadImage(source);
+    const image = await localloadImage(source);
 
     registerFont(`${__dirname}/../static/fonts/Roboto/Roboto-Medium.ttf`, {
       family: 'Roboto-Medium',
@@ -91,7 +111,9 @@ module.exports.matches = async (req, res) => {
     res.set('Content-Type', 'image/jpeg');
     return res.end(buffer);
   }
-  const image = await loadImage(source);
+
+  const image = await localloadImage(source);
+
   let buffer;
   if (req.query.thumb === '') {
     if (WIDTH <= 0 || image.height * (WIDTH / image.width) <= 0) {
@@ -99,6 +121,7 @@ module.exports.matches = async (req, res) => {
     }
     const canvas = createCanvas(WIDTH, image.height * (WIDTH / image.width));
     const ctx = canvas.getContext('2d');
+
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
     // Note: The quality of the JPEG can't be set using Node.js canvas, it will always be maximum quality.
@@ -117,7 +140,8 @@ module.exports.train = async (req, res) => {
 
   if (!fs.existsSync(source)) return res.status(BAD_REQUEST).error(`${source} does not exist`);
 
-  const image = await loadImage(source);
+  const image = await localloadImage(source);
+
   let buffer;
   if (req.query.thumb === '') {
     if (WIDTH <= 0 || image.height * (WIDTH / image.width) <= 0) {
