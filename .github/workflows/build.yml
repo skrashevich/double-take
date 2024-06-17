@@ -61,7 +61,7 @@ jobs:
           latest=${{ matrix.target == '' && github.ref == 'refs/heads/main' }}
           suffix=${{ matrix.target }}
     - name: Build Docker Image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: .build/Dockerfile
