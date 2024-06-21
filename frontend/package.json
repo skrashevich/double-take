@@ -38,7 +38,7 @@
     "v-lazy-image": "2.1.1",
     "v-pagination-3": "0.1.7",
     "vue": "3.4.20",
-    "vue-router": "4.3.0",
+    "vue-router": "4.4.0",
     "vue3-ace-editor": "2.2.4"
   },
   "devDependencies": {
