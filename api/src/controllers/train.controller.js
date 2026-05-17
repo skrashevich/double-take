@@ -48,7 +48,9 @@ module.exports.get = async (req, res) => {
 
   files.forEach((file) => {
     file.results = [];
-    const trainings = db.prepare('SELECT * FROM train WHERE fileId = ?').all(file.id);
+    const trainings = db
+      .prepare('SELECT *,json(meta) as meta FROM train WHERE fileId = ?')
+      .all(file.id);
     trainings.forEach(({ detector, meta, createdAt }) => {
       meta = JSON.parse(meta);
       delete meta.detector;
@@ -128,7 +130,7 @@ module.exports.add = async (req, res) => {
 
           filesystem.writer(`${STORAGE.MEDIA.PATH}/train/${name}/${filename}`, rotateResult.buffer);
         } catch (error) {
-          console.error(`An error occurred when rotating the file: ${error.message}`);
+          console.warn(`An error occurred when rotating the file: ${error.message}`);
           filesystem.writer(`${STORAGE.MEDIA.PATH}/train/${name}/${filename}`, buffer);
         }
 
