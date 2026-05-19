@@ -29,7 +29,7 @@
     "copy-to-clipboard": "3.3.3",
     "luxon": "3.4.4",
     "mitt": "3.0.1",
-    "primeflex": "2.0.0",
+    "primeflex": "4.0.0",
     "primeicons": "6.0.1",
     "primevue": "<3.50.0",
     "prismjs": "1.29.0",
