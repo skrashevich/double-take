@@ -43,7 +43,7 @@
     "jsonschema": "^1.4.1",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
-    "luxon": "^3.4.4",
+    "luxon": "^3.7.2",
     "mathjs": "^13.0.3",
     "mqtt": "^5.3.4",
     "multer": "^1.4.5-lts.1",
