@@ -51,7 +51,7 @@
     "node-schedule": "^2.1.1",
     "object-hash": "^3.0.0",
     "piexifjs": "^1.0.6",
-    "probe-image-size": "^7.2.3",
+    "probe-image-size": "^7.3.0",
     "read-last-lines": "^1.8.0",
     "romanization": "^0.0.1",
     "sanitize-filename-truncate": "^1.0.2",
