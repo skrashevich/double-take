@@ -24,7 +24,7 @@
   "dependencies": {
     "ace-builds": "1.35.3",
     "ace-code": "^1.35.3",
-    "ace-linters": "1.2.3",
+    "ace-linters": "2.2.0",
     "axios": "1.6.7",
     "copy-to-clipboard": "3.3.3",
     "luxon": "3.4.4",
