@@ -27,7 +27,7 @@
     "axios": "^1.7.2",
     "axios-debug-log": "^1.0.0",
     "better-sqlite3": ">=9.5.0",
-    "canvas": "^2.11.2",
+    "canvas": "^3.2.3",
     "cors": "^2.8.5",
     "execution-time": "^1.4.1",
     "express": "^4.19.2",
