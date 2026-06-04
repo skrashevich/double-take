@@ -52,6 +52,7 @@
     "socket.io": "^4.6.2",
     "traverse": "^0.6.6",
     "uuid": "^9.0.0",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "webp-wasm": "^1.0.4"
   }
 }
