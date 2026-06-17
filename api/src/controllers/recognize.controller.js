@@ -175,7 +175,7 @@ module.exports.start = async (req, res) => {
     ['matches', 'misses', 'unknowns'].forEach((type) =>
       loggedOutput[type].forEach((result) => delete result.base64)
     );
-    console.log(loggedOutput);
+    console.log(JSON.stringify(loggedOutput, null, 2)); // Re-Stringify to print nested array values
 
     PROCESSING = false;
 
