@@ -747,4 +747,4 @@ compreface_key: <api-key>
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=skrashevich/double-take&type=Timeline)](https://star-history.com/#skrashevich/double-take&Timeline)
+[![Star History Chart](https://star-history.dera.page/svg?repos=skrashevich/double-take&type=Timeline)](https://star-history.dera.page/#skrashevich/double-take&Timeline)
